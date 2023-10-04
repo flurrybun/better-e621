@@ -43,12 +43,16 @@
 			postIndex: postIndex
 		});
 	};
+
+	//{data.sample.url}
+	//"https://picsum.photos/seed/{data.id}/{data.sample.width}/{data.sample.height}"
 </script>
 
 <div
 	class="inline-block 3xl:w-[calc(25%-12px)] xl:w-[calc(33.333%-10px)] lg:w-[calc(50%-8px)] sm:w-[calc(33.333%-10px)] xs:w-[calc(50%-8px)] pb-[16px]"
 >
 	<img
+		loading="lazy"
 		src={data.sample.url}
 		alt=""
 		class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer"

@@ -1,18 +1,25 @@
 <script>
 	import PostCard from './PostCard.svelte';
 	import { MasonryInfiniteGrid } from '@egjs/svelte-infinitegrid';
-	export let data;
+	import { getContext } from 'svelte';
 
-	let items = getItems(0, 10);
+	export let posts;
+	const { fetchData } = getContext('fetch-data');
 
-	function getItems(nextGroupKey, count) {
-		const nextItems = [];
+	const POSTS_PER_REQUEST = 25;
 
-		for (let i = 0; i < count; i++) {
-			const nextKey = nextGroupKey * count + i;
+	let isDataFinished = false;
+	let items = getItems(0);
 
-			nextItems.push({ groupKey: nextGroupKey, key: nextKey });
+	function getItems(nextGroupKey) {
+		let nextKey = nextGroupKey * POSTS_PER_REQUEST;
+		let nextItems = [];
+
+		for (let i = 0; i < POSTS_PER_REQUEST && nextKey < posts.length - 1; i++) {
+			nextKey = nextGroupKey * POSTS_PER_REQUEST + i;
+			nextItems.push({ groupKey: nextGroupKey, key: nextKey, postData: posts[nextKey] });
 		}
+
 		return nextItems;
 	}
 </script>
@@ -21,14 +28,27 @@
 	class="container"
 	column={0}
 	{items}
-	on:requestAppend={({ detail: e }) => {
-		const nextGroupKey = (+e.groupKey || 0) + 1;
+	on:requestAppend={async ({ detail: e }) => {
+		if (isDataFinished) return;
 
-		items = [...items, ...getItems(nextGroupKey, 10)];
+		e.wait();
+
+		const newData = await fetchData(posts[posts.length - 1].id);
+		if (newData.posts.length === 0) {
+			isDataFinished = true;
+			e.ready();
+			return;
+		}
+		posts.push(...newData.posts);
+
+		e.ready();
+
+		const nextGroupKey = (+e.groupKey || 0) + 1;
+		items = [...items, ...getItems(nextGroupKey)];
 	}}
 	let:visibleItems
 >
 	{#each visibleItems as item (item.key)}
-		<PostCard data={data.posts[item.key]} postIndex={item.key} />
+		<PostCard data={item.data.postData} postIndex={item.key} />
 	{/each}
 </MasonryInfiniteGrid>
