@@ -2,8 +2,11 @@
 	import ArrowUpIcon from '~icons/feather/arrow-up';
 	import ArrowDownIcon from '~icons/feather/arrow-down';
 	import HeartIcon from '~icons/feather/heart';
+	import { openModal } from 'svelte-modals';
+	import GalleryModal from './GalleryModal.svelte';
 
 	export let data;
+	export let postIndex;
 
 	$: voteStatus = 0;
 	$: postScore = data.score.total + voteStatus;
@@ -34,12 +37,23 @@
 
 		return number.toPrecision(3) + suffixes[suffixIndex];
 	};
+
+	const handleClickImage = () => {
+		openModal(GalleryModal, {
+			postIndex: postIndex
+		});
+	};
 </script>
 
 <div
 	class="inline-block 3xl:w-[calc(25%-12px)] xl:w-[calc(33.333%-10px)] lg:w-[calc(50%-8px)] sm:w-[calc(33.333%-10px)] xs:w-[calc(50%-8px)] pb-[16px]"
 >
-	<img src={data.sample.url} alt="" class="w-full rounded-t-lg min-h-[12rem] max-h-96" />
+	<img
+		src={data.sample.url}
+		alt=""
+		class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer"
+		on:click={handleClickImage}
+	/>
 	<div class="p-3 bg-slate-900 rounded-b-lg flex justify-between">
 		<div class="flex items-center gap-2.5">
 			<div class="flex items-center gap-2.5">

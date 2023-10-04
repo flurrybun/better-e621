@@ -29,6 +29,6 @@
 	let:visibleItems
 >
 	{#each visibleItems as item (item.key)}
-		<PostCard data={data.posts[item.key]} />
+		<PostCard data={data.posts[item.key]} postIndex={item.key} />
 	{/each}
 </MasonryInfiniteGrid>
