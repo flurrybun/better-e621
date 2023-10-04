@@ -1,6 +1,7 @@
 <script>
 	import SearchIcon from '~icons/feather/search';
 	import Masonry from '../components/Masonry.svelte';
+	import { setContext } from 'svelte';
 
 	export let data;
 
@@ -39,6 +40,9 @@
 	}
 
 	let searchQuery = data.searchQuery;
+
+	const fetchData = data.fetchData;
+	setContext('fetch-data', { fetchData });
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -79,10 +83,8 @@
 	{#key data}
 		{#await data.streamed.posts}
 			Loading...
-		{:then data}
-			<Masonry {data} />
-		{:catch error}
-			Error
+		{:then streamedData}
+			<Masonry posts={streamedData.posts} />
 		{/await}
 	{/key}
 </div>
