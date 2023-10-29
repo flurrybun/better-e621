@@ -5,6 +5,10 @@
 
 	export let data;
 
+	const fetchNextPage = data.fetchNextPage;
+	const isAllDataFetched = data.isAllDataFetched;
+	setContext('page-data', { fetchNextPage, isAllDataFetched });
+
 	//dummy info cause im too lazy to implement it yet
 	let relatedTags = [
 		{
@@ -40,16 +44,13 @@
 	}
 
 	let searchQuery = data.searchQuery;
-
-	const fetchData = data.fetchData;
-	setContext('fetch-data', { fetchData });
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
 	<aside class="hidden lg:block">
 		<div class="flex items-end mb-4 gap-2">
 			<img src="/images/logo.svg" alt="Logo" />
-			<h1 class="text-2xl leading-[0.8] font-semibold">m</h1>
+			<h1 class="text-2xl leading-[0.8] font-semibold">better e621</h1>
 		</div>
 		<form
 			method="get"

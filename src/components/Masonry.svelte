@@ -4,11 +4,11 @@
 	import { getContext } from 'svelte';
 
 	export let posts;
-	const { fetchData } = getContext('fetch-data');
+	const { fetchNextPage } = getContext('page-data');
+
+	let isFinishedRendering = false;
 
 	const POSTS_PER_REQUEST = 25;
-
-	let isDataFinished = false;
 	let items = getItems(0);
 
 	function getItems(nextGroupKey) {
@@ -29,20 +29,20 @@
 	column={0}
 	{items}
 	on:requestAppend={async ({ detail: e }) => {
-		if (isDataFinished) return;
+		if (isFinishedRendering) return;
 
 		e.wait();
+		const nextPageData = await fetchNextPage();
 
-		const newData = await fetchData(posts[posts.length - 1].id);
-		if (newData.posts.length === 0) {
-			isDataFinished = true;
+		if (nextPageData.isAllDataFetched) {
+			isFinishedRendering = true;
 			e.ready();
 			return;
 		}
-		posts.push(...newData.posts);
 
 		e.ready();
 
+		posts.push(...nextPageData.posts);
 		const nextGroupKey = (+e.groupKey || 0) + 1;
 		items = [...items, ...getItems(nextGroupKey)];
 	}}

@@ -1,17 +1,40 @@
 export async function load({ fetch, url }) {
 	const searchQuery = url.searchParams.get('q');
+	let isAllDataFetched = false;
+	let pageNumber = 0;
 
-	async function fetchData(lastPostID = null) {
+	async function fetchNextPage() {
+		if (isAllDataFetched)
+			return {
+				posts: [],
+				isAllDataFetched: true
+			};
+
+		pageNumber++;
 		const POSTS_PER_REQUEST = 25;
-
 		let url = `https://e621.net/posts.json?limit=${POSTS_PER_REQUEST}`;
 
 		if (searchQuery !== null) url += `&tags=${encodeURIComponent(searchQuery)}`;
-		if (lastPostID !== null) url += `&page=b${lastPostID}`;
+		url += `&page=${pageNumber}`;
 
 		const res = await fetch(url);
 
-		if (res.ok) return res.json();
+		if (res.ok) {
+			const data = await res.json();
+
+			if (data.posts.length === 0) {
+				isAllDataFetched = true;
+				return {
+					posts: [],
+					isAllDataFetched: true
+				};
+			}
+
+			return {
+				posts: data.posts,
+				isAllDataFetched: false
+			};
+		}
 		return {
 			status: res.status,
 			error: new Error()
@@ -20,9 +43,10 @@ export async function load({ fetch, url }) {
 
 	return {
 		streamed: {
-			posts: fetchData()
+			posts: fetchNextPage()
 		},
+		isAllDataFetched: isAllDataFetched,
 		searchQuery: searchQuery,
-		fetchData: fetchData
+		fetchNextPage: fetchNextPage
 	};
 }

@@ -10,7 +10,7 @@
 	export let isOpen;
 	export let postIndex;
 
-	$: currentPost = postIndex;
+	let currentPost = postIndex;
 	let postTransitionDirection; //-1 for left, 1 for right
 
 	const handleKeyDown = (event) => {
