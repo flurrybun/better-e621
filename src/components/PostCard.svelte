@@ -4,6 +4,7 @@
 	import HeartIcon from '~icons/feather/heart';
 	import { openModal } from 'svelte-modals';
 	import GalleryModal from './GalleryModal.svelte';
+	import { numberToAbbreviatedString } from '$lib/utils.js';
 
 	export let data;
 	export let postIndex;
@@ -22,30 +23,11 @@
 		}
 	};
 
-	//convert number to string with 3 significant digits and suffix
-	const numberToAbbreviatedString = (number) => {
-		if (number == null) return;
-		if (Math.abs(number) < 100) return number.toString();
-
-		const suffixes = ['', 'k', 'M', 'B', 'T'];
-		let suffixIndex = 0;
-
-		while (Math.abs(number) >= 1000) {
-			number /= 1000;
-			suffixIndex++;
-		}
-
-		return number.toPrecision(3) + suffixes[suffixIndex];
-	};
-
 	const handleClickImage = () => {
 		openModal(GalleryModal, {
 			postIndex: postIndex
 		});
 	};
-
-	//{data.sample.url}
-	//"https://picsum.photos/seed/{data.id}/{data.sample.width}/{data.sample.height}"
 </script>
 
 <div

@@ -1,6 +1,7 @@
 <script>
 	import SearchIcon from '~icons/feather/search';
 	import Masonry from '../components/Masonry.svelte';
+	import { numberToAbbreviatedString } from '$lib/utils.js';
 
 	export let data;
 
@@ -25,20 +26,6 @@
 			count: 12
 		}
 	];
-
-	function abbreviateNumber(value) {
-		let newValue = value;
-		const suffixes = ['', 'k', 'M', 'B', 'T'];
-		let suffixNum = 0;
-		while (newValue >= 1000) {
-			newValue /= 1000;
-			suffixNum++;
-		}
-
-		newValue = newValue.toString().length > 2 ? newValue.toPrecision(3) : newValue.toPrecision();
-		newValue += suffixes[suffixNum];
-		return newValue;
-	}
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -70,7 +57,8 @@
 			<ol class="text-slate-400 grid grid-cols-2">
 				{#each relatedTags as tag}
 					<li>
-						{tag.name} <span class="text-slate-600 text-xs">{abbreviateNumber(tag.count)}</span>
+						{tag.name}
+						<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.count)}</span>
 					</li>
 				{/each}
 			</ol>
