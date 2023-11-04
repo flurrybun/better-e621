@@ -1,52 +1,38 @@
-export async function load({ fetch, url }) {
+import { posts, allDataFetched, fetchPage } from '../stores/postsStore.js';
+
+let posts_value;
+let allDataFetched_value;
+
+const POSTS_PER_REQUEST = 25;
+
+posts.subscribe((value) => {
+	posts_value = value;
+});
+
+allDataFetched.subscribe((value) => {
+	allDataFetched_value = value;
+});
+
+export async function load({ url }) {
 	const searchQuery = url.searchParams.get('q');
-	let isAllDataFetched = false;
-	let pageNumber = 0;
 
 	async function fetchNextPage() {
-		if (isAllDataFetched)
-			return {
-				posts: [],
-				isAllDataFetched: true
-			};
+		if (allDataFetched_value) return [];
 
-		pageNumber++;
-		const POSTS_PER_REQUEST = 25;
-		let url = `https://e621.net/posts.json?limit=${POSTS_PER_REQUEST}`;
+		const currentPage = Math.ceil(posts_value.length / POSTS_PER_REQUEST);
+		const nextPage = currentPage + 1;
 
-		if (searchQuery !== null) url += `&tags=${encodeURIComponent(searchQuery)}`;
-		url += `&page=${pageNumber}`;
+		const cachedPosts = posts_value.slice();
+		const data = await fetchPage(nextPage, searchQuery);
 
-		const res = await fetch(url);
+		posts.set([...cachedPosts, ...data]);
 
-		if (res.ok) {
-			const data = await res.json();
-
-			if (data.posts.length === 0) {
-				isAllDataFetched = true;
-				return {
-					posts: [],
-					isAllDataFetched: true
-				};
-			}
-
-			return {
-				posts: data.posts,
-				isAllDataFetched: false
-			};
-		}
-		return {
-			status: res.status,
-			error: new Error()
-		};
+		return posts_value;
 	}
 
 	return {
-		streamed: {
-			posts: fetchNextPage()
-		},
-		isAllDataFetched: isAllDataFetched,
-		searchQuery: searchQuery,
-		fetchNextPage: fetchNextPage
+		allDataFetched,
+		searchQuery,
+		fetchNextPage
 	};
 }

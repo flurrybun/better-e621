@@ -1,13 +1,10 @@
 <script>
 	import SearchIcon from '~icons/feather/search';
 	import Masonry from '../components/Masonry.svelte';
-	import { setContext } from 'svelte';
 
 	export let data;
 
-	const fetchNextPage = data.fetchNextPage;
-	const isAllDataFetched = data.isAllDataFetched;
-	setContext('page-data', { fetchNextPage, isAllDataFetched });
+	let searchQuery = data.searchQuery;
 
 	//dummy info cause im too lazy to implement it yet
 	let relatedTags = [
@@ -42,8 +39,6 @@
 		newValue += suffixes[suffixNum];
 		return newValue;
 	}
-
-	let searchQuery = data.searchQuery;
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -81,11 +76,5 @@
 			</ol>
 		</div>
 	</aside>
-	{#key data}
-		{#await data.streamed.posts}
-			Loading...
-		{:then streamedData}
-			<Masonry posts={streamedData.posts} />
-		{/await}
-	{/key}
+	<Masonry />
 </div>

@@ -1,23 +1,36 @@
 <script>
 	import PostCard from './PostCard.svelte';
 	import { MasonryInfiniteGrid } from '@egjs/svelte-infinitegrid';
-	import { getContext } from 'svelte';
+	import { allDataFetched, posts } from '../stores/postsStore.js';
+	import { page } from '$app/stores';
 
-	export let posts;
-	const { fetchNextPage } = getContext('page-data');
+	const fetchNextPage = $page.data.fetchNextPage;
 
-	let isFinishedRendering = false;
+	let posts_value;
+	let allDataFetched_value;
+
+	posts.subscribe((value) => {
+		posts_value = value;
+	});
+
+	allDataFetched.subscribe((value) => {
+		allDataFetched_value = value;
+	});
 
 	const POSTS_PER_REQUEST = 25;
-	let items = getItems(0);
+	let finishedRendering = false;
+	let items = [];
 
 	function getItems(nextGroupKey) {
-		let nextKey = nextGroupKey * POSTS_PER_REQUEST;
-		let nextItems = [];
+		const nextItems = [];
+		let nextKey = (nextGroupKey - 1) * POSTS_PER_REQUEST;
 
-		for (let i = 0; i < POSTS_PER_REQUEST && nextKey < posts.length - 1; i++) {
-			nextKey = nextGroupKey * POSTS_PER_REQUEST + i;
-			nextItems.push({ groupKey: nextGroupKey, key: nextKey, postData: posts[nextKey] });
+		for (let i = 0; i < POSTS_PER_REQUEST; i++) {
+			nextKey = (nextGroupKey - 1) * POSTS_PER_REQUEST + i;
+
+			if (posts_value.length < nextKey + 1) return nextItems;
+
+			nextItems.push({ groupKey: nextGroupKey, key: nextKey });
 		}
 
 		return nextItems;
@@ -29,26 +42,28 @@
 	column={0}
 	{items}
 	on:requestAppend={async ({ detail: e }) => {
-		if (isFinishedRendering) return;
+		if (finishedRendering) return;
 
 		e.wait();
-		const nextPageData = await fetchNextPage();
 
-		if (nextPageData.isAllDataFetched) {
-			isFinishedRendering = true;
-			e.ready();
-			return;
+		if (posts_value.length <= (+e.groupKey || 0) * POSTS_PER_REQUEST) {
+			if (allDataFetched_value) {
+				finishedRendering = true;
+				e.ready();
+				return;
+			}
+
+			await fetchNextPage();
 		}
 
 		e.ready();
 
-		posts.push(...nextPageData.posts);
 		const nextGroupKey = (+e.groupKey || 0) + 1;
 		items = [...items, ...getItems(nextGroupKey)];
 	}}
 	let:visibleItems
 >
 	{#each visibleItems as item (item.key)}
-		<PostCard data={item.data.postData} postIndex={item.key} />
+		<PostCard data={posts_value[item.key]} postIndex={item.key} />
 	{/each}
 </MasonryInfiniteGrid>
