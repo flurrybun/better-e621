@@ -66,7 +66,4 @@
 	{#key data}
 		<Masonry />
 	{/key}
-	<!-- {#key data.searchQuery}
-		{console.log('test')}
-	{/key} -->
 </div>

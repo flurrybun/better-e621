@@ -24,11 +24,6 @@
 	let finishedRendering = false;
 	let items = [];
 
-	onDestroy(() => {
-		finishedRendering = false;
-		items = [];
-	});
-
 	function getItems(nextGroupKey) {
 		const nextItems = [];
 		let nextKey = (nextGroupKey - 1) * POSTS_PER_REQUEST;
@@ -52,8 +47,6 @@
 	{items}
 	on:requestAppend={async ({ detail: e }) => {
 		if (finishedRendering) return;
-
-		console.log('fetching data!');
 
 		e.wait();
 

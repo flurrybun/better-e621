@@ -19,8 +19,6 @@ export async function load({ url }) {
 	posts.set([]);
 	allDataFetched.set(false);
 
-	console.log(searchQuery);
-
 	async function fetchNextPage() {
 		if (allDataFetched_value) return [];
 
