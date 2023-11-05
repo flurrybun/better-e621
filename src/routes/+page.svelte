@@ -35,7 +35,6 @@
 			<h1 class="text-2xl leading-[0.8] font-semibold">better e621</h1>
 		</div>
 		<form
-			method="get"
 			class="bg-slate-900 rounded-lg flex focus-within:outline-2 focus-within:outline outline-amber-400 outline-offset-[-2px]"
 		>
 			<input
@@ -64,5 +63,10 @@
 			</ol>
 		</div>
 	</aside>
-	<Masonry />
+	{#key data}
+		<Masonry />
+	{/key}
+	<!-- {#key data.searchQuery}
+		{console.log('test')}
+	{/key} -->
 </div>

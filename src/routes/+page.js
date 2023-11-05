@@ -16,6 +16,11 @@ allDataFetched.subscribe((value) => {
 export async function load({ url }) {
 	const searchQuery = url.searchParams.get('q');
 
+	posts.set([]);
+	allDataFetched.set(false);
+
+	console.log(searchQuery);
+
 	async function fetchNextPage() {
 		if (allDataFetched_value) return [];
 

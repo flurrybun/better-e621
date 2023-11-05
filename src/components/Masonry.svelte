@@ -3,11 +3,14 @@
 	import { MasonryInfiniteGrid } from '@egjs/svelte-infinitegrid';
 	import { allDataFetched, posts } from '../stores/postsStore.js';
 	import { page } from '$app/stores';
+	import { onDestroy } from 'svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;
 
 	let posts_value;
 	let allDataFetched_value;
+
+	let ig;
 
 	posts.subscribe((value) => {
 		posts_value = value;
@@ -20,6 +23,11 @@
 	const POSTS_PER_REQUEST = 25;
 	let finishedRendering = false;
 	let items = [];
+
+	onDestroy(() => {
+		finishedRendering = false;
+		items = [];
+	});
 
 	function getItems(nextGroupKey) {
 		const nextItems = [];
@@ -38,11 +46,14 @@
 </script>
 
 <MasonryInfiniteGrid
+	bind:this={ig}
 	class="container"
 	column={0}
 	{items}
 	on:requestAppend={async ({ detail: e }) => {
 		if (finishedRendering) return;
+
+		console.log('fetching data!');
 
 		e.wait();
 
