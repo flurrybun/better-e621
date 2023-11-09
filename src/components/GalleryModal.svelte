@@ -96,7 +96,7 @@
 						<ChevronLeft />
 					</button>
 				{/if}
-				{#if (posts_value[currentPost].file.ext = 'webm')}
+				{#if posts_value[currentPost].file.ext === 'webm'}
 					<VideoPlayer data={posts_value[currentPost]} />
 				{:else}
 					<img
