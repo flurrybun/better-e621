@@ -7,6 +7,7 @@
 	import X from '~icons/feather/x';
 	import { page } from '$app/stores';
 	import { allDataFetched, posts } from '../stores/postsStore.js';
+	import VideoPlayer from './VideoPlayer.svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;
 
@@ -95,12 +96,16 @@
 						<ChevronLeft />
 					</button>
 				{/if}
-				<img
-					src={posts_value[currentPost]?.sample.url}
-					alt=""
-					class="rounded-2xl h-full w-full max-h-[90vh] max-w-[80vh] shadow-2xl"
-				/>
-				{#if currentPost < posts_value.length - 1 && allDataFetched_value}
+				{#if (posts_value[currentPost].file.ext = 'webm')}
+					<VideoPlayer data={posts_value[currentPost]} />
+				{:else}
+					<img
+						src={posts_value[currentPost].sample.url}
+						alt=""
+						class="rounded-2xl h-full w-full max-h-[90vh] max-w-[80vh] shadow-2xl"
+					/>
+				{/if}
+				{#if !(currentPost >= posts_value.length - 1 && allDataFetched_value)}
 					<button
 						class="text-slate-500 ml-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
 						on:click={nextPost}
