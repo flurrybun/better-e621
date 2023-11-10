@@ -1,4 +1,4 @@
-import { posts, allDataFetched, fetchPage } from '../stores/postsStore.js';
+import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore.js';
 
 let posts_value;
 let allDataFetched_value;

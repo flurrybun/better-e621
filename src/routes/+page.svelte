@@ -1,6 +1,6 @@
 <script>
 	import SearchIcon from '~icons/feather/search';
-	import Masonry from '../components/Masonry.svelte';
+	import Masonry from '$lib/components/Masonry.svelte';
 	import { numberToAbbreviatedString } from '$lib/utils.js';
 
 	export let data;
