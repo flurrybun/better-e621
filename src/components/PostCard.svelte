@@ -38,7 +38,7 @@
 			loading="lazy"
 			src={data.sample.url}
 			alt=""
-			class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer"
+			class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
 			on:click={handleClickImage}
 		/>
 		<div class="p-3 bg-slate-900 rounded-b-lg flex justify-between">
