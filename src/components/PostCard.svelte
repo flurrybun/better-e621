@@ -2,6 +2,7 @@
 	import ArrowUpIcon from '~icons/feather/arrow-up';
 	import ArrowDownIcon from '~icons/feather/arrow-down';
 	import HeartIcon from '~icons/feather/heart';
+	import PlayIcon from '~icons/feather/play';
 	import { openModal } from 'svelte-modals';
 	import GalleryModal from './GalleryModal.svelte';
 	import { numberToAbbreviatedString } from '$lib/utils.js';
@@ -34,13 +35,22 @@
 	<div
 		class="inline-block 3xl:w-[calc(25%-12px)] xl:w-[calc(33.333%-10px)] lg:w-[calc(50%-8px)] sm:w-[calc(33.333%-10px)] xs:w-[calc(50%-8px)] pb-[16px]"
 	>
-		<img
-			loading="lazy"
-			src={data.sample.url}
-			alt=""
-			class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
-			on:click={handleClickImage}
-		/>
+		<div class="relative">
+			<img
+				loading="lazy"
+				src={data.sample.url}
+				alt=""
+				class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
+				on:click={handleClickImage}
+			/>
+			{#if data.file.ext === 'webm'}
+				<div
+					class="absolute p-4 bg-slate-900 bg-opacity-40 backdrop-blur-sm rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+				>
+					<PlayIcon class="text-slate-100 text-xl" />
+				</div>
+			{/if}
+		</div>
 		<div class="p-3 bg-slate-900 rounded-b-lg flex justify-between">
 			<div class="flex items-center gap-2.5">
 				<div class="flex items-center gap-2.5">
