@@ -1,12 +1,17 @@
 import { writable } from 'svelte/store';
+import { postsPerPage } from '$lib/stores/settingsStore.js';
+
+let postsPerPage_value;
+
+postsPerPage.subscribe((value) => {
+	postsPerPage_value = value;
+});
 
 export const posts = writable([]);
 export const allDataFetched = writable(false);
 
-const POSTS_PER_REQUEST = 25;
-
 export async function fetchPage(pageNumber, searchQuery) {
-	let url = `https://e621.net/posts.json?limit=${POSTS_PER_REQUEST}`;
+	let url = `https://e621.net/posts.json?limit=${postsPerPage_value}`;
 
 	if (searchQuery !== null) url += `&tags=${encodeURIComponent(searchQuery)}`;
 	url += `&page=${pageNumber}`;

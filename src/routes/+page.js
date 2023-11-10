@@ -1,9 +1,14 @@
 import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore.js';
+import { postsPerPage } from '$lib/stores/settingsStore.js';
+
+let postsPerPage_value;
+
+postsPerPage.subscribe((value) => {
+	postsPerPage_value = value;
+});
 
 let posts_value;
 let allDataFetched_value;
-
-const POSTS_PER_REQUEST = 25;
 
 posts.subscribe((value) => {
 	posts_value = value;
@@ -22,7 +27,7 @@ export async function load({ url }) {
 	async function fetchNextPage() {
 		if (allDataFetched_value) return [];
 
-		const currentPage = Math.ceil(posts_value.length / POSTS_PER_REQUEST);
+		const currentPage = Math.ceil(posts_value.length / postsPerPage_value);
 		const nextPage = currentPage + 1;
 
 		const cachedPosts = posts_value.slice();
