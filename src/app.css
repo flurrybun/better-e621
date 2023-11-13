@@ -41,3 +41,9 @@
 		font-style: normal;
 	}
 }
+
+/* css for video player component */
+.plyr__video-wrapper {
+	width: 100% !important;
+	height: 100% !important;
+}

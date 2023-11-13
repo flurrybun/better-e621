@@ -11,19 +11,22 @@
 		quality: {
 			default: videoWidths[0],
 			options: [...videoWidths]
-		}
+		},
+		playsinline: true
 	};
 </script>
 
 <SveltePlyr {...plyrConfig}>
 	<!-- svelte-ignore a11y-media-has-caption -->
-	<video
-		poster={data.sample.url}
-		src={videoUrls[0]}
-		class="h-full w-full max-h-[90vh] max-w-[80vh]"
-	>
-		{#each videoUrls as videoUrl}
-			<source src={videoUrl} />
+	<video poster={data.sample.url} src={videoUrls[0]}>
+		{#each videoUrls as videoUrl, index}
+			<source src={videoUrl} size={videoWidths[index]} />
 		{/each}
 	</video>
 </SveltePlyr>
+
+<style>
+	video {
+		width: 100vw !important;
+	}
+</style>

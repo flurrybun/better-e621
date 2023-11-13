@@ -1,11 +1,12 @@
 <script>
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import { closeModal } from 'svelte-modals';
-	import { fly } from 'svelte/transition';
 	import { sineIn, sineOut } from 'svelte/easing';
+	import { fly } from 'svelte/transition';
 	import ChevronLeft from '~icons/feather/chevron-left';
 	import ChevronRight from '~icons/feather/chevron-right';
 	import X from '~icons/feather/x';
-	import { page } from '$app/stores';
 	import { allDataFetched, posts } from '../stores/postsStore.js';
 	import VideoPlayer from './VideoPlayer.svelte';
 
@@ -27,6 +28,29 @@
 
 	let currentPost = postIndex;
 	let postTransitionDirection; //-1 for left, 1 for right
+	let windowWidth;
+	let windowHeight;
+	let contentWidth;
+
+	$: currentPost !== null && getContentWidth();
+	onMount(getContentWidth);
+
+	function getContentWidth() {
+		const containerWidth = windowWidth * 0.8;
+		const containerHeight = windowHeight * 0.9;
+
+		const containerAspectRatio = containerWidth / containerHeight;
+		const contentAspectRatio =
+			posts_value[currentPost].file.width / posts_value[currentPost].file.height;
+
+		if (contentAspectRatio < containerAspectRatio) {
+			contentWidth =
+				(containerHeight / posts_value[currentPost].file.height) *
+				posts_value[currentPost].file.width;
+		} else {
+			contentWidth = containerWidth;
+		}
+	}
 
 	const handleKeyDown = (event) => {
 		switch (event.keyCode) {
@@ -82,7 +106,12 @@
 	{/if}
 </svelte:head>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window
+	on:keydown={handleKeyDown}
+	on:resize={getContentWidth}
+	bind:innerWidth={windowWidth}
+	bind:innerHeight={windowHeight}
+/>
 
 {#if isOpen}
 	<div role="dialog" class="fixed inset-0 flex items-center justify-center">
@@ -96,15 +125,17 @@
 						<ChevronLeft />
 					</button>
 				{/if}
-				{#if posts_value[currentPost].file.ext === 'webm'}
-					<VideoPlayer data={posts_value[currentPost]} />
-				{:else}
-					<img
-						src={posts_value[currentPost].sample.url}
-						alt=""
-						class="rounded-2xl h-full w-full max-h-[90vh] max-w-[80vh] shadow-2xl"
-					/>
-				{/if}
+				<div class="grid place-items-center" style={`width: ${contentWidth}px;`}>
+					{#if posts_value[currentPost].file.ext === 'webm'}
+						<VideoPlayer data={posts_value[currentPost]} />
+					{:else}
+						<img
+							src={posts_value[currentPost].sample.url}
+							alt=""
+							class="w-full h-full shadow-2xl rounded-2xl"
+						/>
+					{/if}
+				</div>
 				{#if !(currentPost >= posts_value.length - 1 && allDataFetched_value)}
 					<button
 						class="text-slate-500 ml-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
@@ -115,6 +146,7 @@
 				{/if}
 			</div>
 		{/key}
+
 		<div class="absolute top-0 right-0 m-6">
 			<button
 				class="bg-slate-800 text-slate-500 bg-opacity-40 rounded-md w-11 aspect-square grid place-items-center cursor-pointer transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
