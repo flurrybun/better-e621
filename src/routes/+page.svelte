@@ -1,31 +1,11 @@
 <script>
-	import SearchIcon from '~icons/feather/search';
 	import Masonry from '$lib/components/Masonry.svelte';
 	import { numberToAbbreviatedString } from '$lib/utils.js';
+	import SearchIcon from '~icons/feather/search';
 
 	export let data;
 
 	let searchQuery = data.searchQuery;
-
-	//dummy info cause im too lazy to implement it yet
-	let relatedTags = [
-		{
-			name: 'mammal',
-			count: 3158542
-		},
-		{
-			name: 'hi-res',
-			count: 628542
-		},
-		{
-			name: 'female',
-			count: 15854
-		},
-		{
-			name: 'male',
-			count: 12
-		}
-	];
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -53,9 +33,9 @@
 		</form>
 		<div class="bg-slate-900 rounded-lg p-8 mt-6">
 			<h2 class="text-2xl font-semibold mb-3">Related tags</h2>
-			<ol class="text-slate-400 grid grid-cols-2">
-				{#each relatedTags as tag}
-					<li>
+			<ol class="text-slate-400 grid grid-cols-2 grid-flow-dense">
+				{#each data.relatedTags as tag (tag.id)}
+					<li class={tag.name.length > 14 ? 'col-span-2' : ''}>
 						{tag.name}
 						<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.count)}</span>
 					</li>
