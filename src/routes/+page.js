@@ -18,7 +18,7 @@ allDataFetched.subscribe((value) => {
 });
 
 export async function load({ url, fetch }) {
-	const searchQuery = url.searchParams.get('q');
+	const searchQuery = url.searchParams.get('q') || '';
 
 	posts.set([]);
 	allDataFetched.set(false);
@@ -44,12 +44,21 @@ export async function load({ url, fetch }) {
 			return !(tag.includes(':') || tag.includes('*') || tag.includes('-'));
 		});
 
-		const res = await fetch(`https://e621.net/tags.json?search[name]=${searchedTags.toString()}`);
+		let res;
+
+		if (searchedTags.length > 0) {
+			res = await fetch(`https://e621.net/tags.json?search[name]=${searchedTags.toString()}`);
+		} else {
+			res = await fetch(`https://e621.net/tags.json?search[order]=count`);
+		}
 
 		if (!res.ok) throw new Error('Failed to fetch tags');
 		const data = await res.json();
 
 		let relatedTags = [];
+
+		console.log(searchedTags);
+		console.log(data);
 
 		data.forEach((tag) => {
 			const individualRelatedTags = tag.related_tags

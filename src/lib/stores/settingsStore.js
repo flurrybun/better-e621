@@ -1,12 +1,14 @@
 import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
 
-//number of posts fetched from e621 for each fetch
+const defaultBlacklistedTags = ['young -rating:s', 'gore', 'scat', 'watersports', 'loli', 'shota'];
+const localBlacklistedTags = browser
+	? localStorage.getItem('blacklistedTags').split(',') ?? defaultBlacklistedTags
+	: defaultBlacklistedTags;
+
 export const postsPerPage = writable(50);
-export const blacklistedTags = writable([
-	'young -rating:s',
-	'gore',
-	'scat',
-	'watersports',
-	'loli',
-	'shota'
-]);
+export const blacklistedTags = writable(localBlacklistedTags ?? defaultBlacklistedTags);
+
+blacklistedTags.subscribe((value) => {
+	if (browser) localStorage.setItem('blacklistedTags', value);
+});

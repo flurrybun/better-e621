@@ -2,10 +2,16 @@
 	import Masonry from '$lib/components/Masonry.svelte';
 	import { numberToAbbreviatedString } from '$lib/utils.js';
 	import SearchIcon from '~icons/feather/search';
+	import { blacklistedTags } from '$lib/stores/settingsStore.js';
 
 	export let data;
 
-	let searchQuery = data.searchQuery;
+	console.log($blacklistedTags);
+
+	let searchValue = data.searchValue;
+	let blacklistValue = $blacklistedTags.join(' ');
+
+	$: blacklistValue && blacklistedTags.set(blacklistValue.trim().split(' '));
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -20,7 +26,7 @@
 			<input
 				type="search"
 				name="q"
-				bind:value={searchQuery}
+				bind:value={searchValue}
 				placeholder="Search"
 				class="placeholder:text-slate-600 bg-transparent pl-4 grow focus:outline-none focus:placeholder:text-slate-900"
 			/>
@@ -41,6 +47,13 @@
 					</li>
 				{/each}
 			</ol>
+		</div>
+		<div class="bg-slate-900 rounded-lg p-8 mt-6">
+			<h2 class="text-2xl font-semibold mb-3">Blacklisted tags</h2>
+			<textarea
+				bind:value={blacklistValue}
+				class="w-full border border-slate-700 rounded-md bg-slate-800 bg-opacity-50 resize-none"
+			/>
 		</div>
 	</aside>
 	{#key data}
