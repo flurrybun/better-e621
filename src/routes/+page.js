@@ -41,10 +41,12 @@ export async function load({ url, fetch }) {
 		let searchedTags = searchQuery.replace(/[*~]/g, '').split(' ');
 
 		searchedTags = searchedTags.filter((tag) => {
-			return !(tag.includes(':') || tag.includes('*') || tag.includes('-'));
+			return !(tag.includes(':') || tag.includes('*') || tag.includes('-')) && tag !== '';
 		});
 
 		let res;
+
+		console.log(searchedTags);
 
 		if (searchedTags.length > 0) {
 			res = await fetch(`https://e621.net/tags.json?search[name]=${searchedTags.toString()}`);
@@ -57,9 +59,6 @@ export async function load({ url, fetch }) {
 
 		let relatedTags = [];
 
-		console.log(searchedTags);
-		console.log(data);
-
 		data.forEach((tag) => {
 			const individualRelatedTags = tag.related_tags
 				.split(' ')
@@ -68,7 +67,9 @@ export async function load({ url, fetch }) {
 			relatedTags = [...relatedTags, ...individualRelatedTags];
 		});
 
-		const res2 = await fetch(`https://e621.net/tags.json?search[name]=${relatedTags.toString()}`);
+		const res2 = await fetch(
+			`https://e621.net/tags.json?search[name]=${relatedTags.slice(0, 50).toString()}`
+		);
 
 		if (!res2.ok) throw new Error('Failed to fetch tags');
 		const data2 = await res2.json();
