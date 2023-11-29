@@ -31,9 +31,20 @@
 	let windowWidth;
 	let windowHeight;
 	let contentWidth;
+	let isImageLoaded = false;
 
-	$: currentPost !== null && getContentWidth();
-	onMount(getContentWidth);
+	$: currentPost !== null && onContentChange();
+	onMount(onContentChange);
+
+	function onContentChange() {
+		getContentWidth();
+		isImageLoaded = false;
+
+		const img = new Image();
+		img.src = posts_value[currentPost + 1].file.url;
+		const img2 = new Image();
+		img2.src = posts_value[currentPost + 1].preview.url;
+	}
 
 	function getContentWidth() {
 		const containerWidth = windowWidth * 0.8;
@@ -125,14 +136,21 @@
 						<ChevronLeft />
 					</button>
 				{/if}
-				<div class="grid place-items-center" style={`width: ${contentWidth}px;`}>
+				<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
 					{#if posts_value[currentPost].file.ext === 'webm'}
 						<VideoPlayer data={posts_value[currentPost]} />
 					{:else}
 						<img
-							src={posts_value[currentPost].sample.url}
+							on:load={() => (isImageLoaded = true)}
+							src={posts_value[currentPost].file.url}
 							alt=""
-							class="w-full h-full shadow-2xl rounded-2xl"
+							class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
+							style="opacity: {isImageLoaded ? 1 : 0}"
+						/>
+						<img
+							src={posts_value[currentPost].preview.url}
+							alt=""
+							class="w-full h-full shadow-2xl rounded-2xl absolute"
 						/>
 					{/if}
 				</div>
