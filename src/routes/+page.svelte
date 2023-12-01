@@ -1,17 +1,25 @@
 <script>
 	import Masonry from '$lib/components/Masonry.svelte';
+	import { blacklistedTags } from '$lib/stores/settingsStore.js';
 	import { numberToAbbreviatedString } from '$lib/utils.js';
 	import SearchIcon from '~icons/feather/search';
-	import { blacklistedTags } from '$lib/stores/settingsStore.js';
+	import TagInput from '../lib/components/TagInput.svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let data;
 
-	console.log($blacklistedTags);
-
 	let searchValue = data.searchValue;
-	let blacklistValue = $blacklistedTags.join(' ');
+	let blacklistValue = $blacklistedTags;
 
-	$: blacklistValue && blacklistedTags.set(blacklistValue.trim().split(' '));
+	$: blacklistedTags.set(blacklistValue);
+
+	function handleSearch() {
+		const url = new URL(window.location.href);
+		url.searchParams.set('q', searchValue.join(' '));
+		history.pushState({}, null, url);
+
+		invalidate((url) => true);
+	}
 </script>
 
 <div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
@@ -22,14 +30,23 @@
 		</div>
 		<form
 			class="bg-slate-900 rounded-lg flex focus-within:outline-2 focus-within:outline outline-amber-400 outline-offset-[-2px]"
+			on:submit|preventDefault={handleSearch}
 		>
-			<input
+			<!-- <input
 				type="search"
 				name="q"
 				bind:value={searchValue}
 				placeholder="Search"
 				class="placeholder:text-slate-600 bg-transparent pl-4 grow focus:outline-none focus:placeholder:text-slate-900"
-			/>
+			/> -->
+			<div class="p-3 w-full">
+				<TagInput
+					bind:tags={searchValue}
+					placeholder="Search posts"
+					name="q"
+					doesEnterSubmit={true}
+				/>
+			</div>
 			<button
 				type="submit"
 				class="bg-slate-800 rounded-md flex items-center justify-center p-2.5 m-1.5"
@@ -50,13 +67,14 @@
 		</div>
 		<div class="bg-slate-900 rounded-lg p-8 mt-6">
 			<h2 class="text-2xl font-semibold mb-3">Blacklisted tags</h2>
-			<textarea
-				bind:value={blacklistValue}
-				class="w-full border border-slate-700 rounded-md bg-slate-800 bg-opacity-50 resize-none"
-			/>
+			<div
+				class="rounded-lg bg-slate-800 bg-opacity-50 p-3 outline-amber-400 outline-2 focus-within:outline"
+			>
+				<TagInput bind:tags={blacklistValue} placeholder="Add tags" />
+			</div>
 		</div>
 	</aside>
-	{#key data}
+	{#key data.searchQuery}
 		<Masonry />
 	{/key}
 </div>

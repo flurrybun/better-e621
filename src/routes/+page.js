@@ -46,8 +46,6 @@ export async function load({ url, fetch }) {
 
 		let res;
 
-		console.log(searchedTags);
-
 		if (searchedTags.length > 0) {
 			res = await fetch(`https://e621.net/tags.json?search[name]=${searchedTags.toString()}`);
 		} else {
