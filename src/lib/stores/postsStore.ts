@@ -1,5 +1,6 @@
 import { blacklistedTags, postsPerPage } from '$lib/stores/settingsStore';
 import type { Post } from '$lib/types';
+import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 
 let postsPerPage_value: number;
@@ -13,8 +14,8 @@ blacklistedTags.subscribe((value) => {
 	blacklistedTags_value = value;
 });
 
-export const posts = writable([]);
-export const allDataFetched = writable(false);
+export const posts: Writable<Post[]> = writable([]);
+export const allDataFetched: Writable<boolean> = writable(false);
 
 export async function fetchPage(pageNumber: number, searchQuery: string | null): Promise<Post[]> {
 	let url = `https://e621.net/posts.json?limit=${postsPerPage_value}`;

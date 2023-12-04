@@ -1,11 +1,11 @@
+import { allDataFetched, fetchPage, posts } from '$lib/stores/postsStore';
+import { postsPerPage } from '$lib/stores/settingsStore';
+import type { Post, Tag } from '$lib/types';
 import type { PageLoad } from './$types';
 
-import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore';
-import { postsPerPage } from '$lib/stores/settingsStore';
-
-let postsPerPage_value;
-let posts_value;
-let allDataFetched_value;
+let postsPerPage_value: number;
+let posts_value: Post[];
+let allDataFetched_value: boolean;
 
 postsPerPage.subscribe((value) => {
 	postsPerPage_value = value;
@@ -55,9 +55,9 @@ export const load: PageLoad = async ({ url, fetch }) => {
 		}
 
 		if (!res.ok) throw new Error('Failed to fetch tags');
-		const data = await res.json();
+		const data: Tag[] = await res.json();
 
-		let relatedTags = [];
+		let relatedTags: string[] = [];
 
 		data.forEach((tag) => {
 			const individualRelatedTags = tag.related_tags
@@ -72,7 +72,7 @@ export const load: PageLoad = async ({ url, fetch }) => {
 		);
 
 		if (!res2.ok) throw new Error('Failed to fetch tags');
-		const data2 = await res2.json();
+		const data2: Tag[] = await res2.json();
 
 		data2.sort((a, b) => {
 			return b.post_count - a.post_count;
