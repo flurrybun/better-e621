@@ -7,7 +7,7 @@
 	import ChevronLeft from '~icons/feather/chevron-left';
 	import ChevronRight from '~icons/feather/chevron-right';
 	import X from '~icons/feather/x';
-	import { allDataFetched, posts } from '../stores/postsStore.js';
+	import { allDataFetched, posts } from '../stores/postsStore';
 	import VideoPlayer from './VideoPlayer.svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;

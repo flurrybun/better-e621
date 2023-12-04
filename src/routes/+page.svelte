@@ -1,7 +1,7 @@
 <script>
 	import Masonry from '$lib/components/Masonry.svelte';
-	import { blacklistedTags } from '$lib/stores/settingsStore.js';
-	import { numberToAbbreviatedString } from '$lib/utils.js';
+	import { blacklistedTags } from '$lib/stores/settingsStore';
+	import { numberToAbbreviatedString } from '$lib/utils';
 	import SearchIcon from '~icons/feather/search';
 	import TagInput from '../lib/components/TagInput.svelte';
 	import { invalidate } from '$app/navigation';
