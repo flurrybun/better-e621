@@ -20,7 +20,14 @@ export type Post = {
 		height: number;
 		width: number;
 		url: string;
-		alternates: object;
+		alternates: {
+			[key: string]: {
+				type: string;
+				height: number;
+				width: number;
+				urls: (string | null)[];
+			};
+		};
 	};
 	score: {
 		up: number;

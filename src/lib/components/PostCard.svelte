@@ -1,22 +1,23 @@
-<script>
-	import ArrowUpIcon from '~icons/feather/arrow-up';
+<script lang="ts">
+	import type { Post } from '$lib/types';
+	import { numberToAbbreviatedString } from '$lib/utils';
+	import { openModal } from 'svelte-modals';
 	import ArrowDownIcon from '~icons/feather/arrow-down';
+	import ArrowUpIcon from '~icons/feather/arrow-up';
 	import HeartIcon from '~icons/feather/heart';
 	import PlayIcon from '~icons/feather/play';
-	import { openModal } from 'svelte-modals';
 	import GalleryModal from './GalleryModal.svelte';
-	import { numberToAbbreviatedString } from '$lib/utils';
 
-	export let data;
-	export let postIndex;
+	export let postData: Post;
+	export let postIndex: number;
 
-	$: voteStatus = 0;
-	$: postScore = data?.score.total + voteStatus;
+	let voteStatus = 0;
+	let isFavorited = false;
 
-	$: isFavorited = false;
-	$: favCount = data?.fav_count + isFavorited;
+	$: postScore = postData?.score.total + voteStatus;
+	$: favCount = postData?.fav_count + (isFavorited ? 1 : 0);
 
-	const updateVote = (vote) => {
+	const updateVote = (vote: -1 | 1) => {
 		if (voteStatus === vote) {
 			voteStatus = 0;
 		} else {
@@ -31,19 +32,19 @@
 	};
 </script>
 
-{#if data}
+{#if postData}
 	<div
 		class="inline-block 3xl:w-[calc(25%-12px)] xl:w-[calc(33.333%-10px)] lg:w-[calc(50%-8px)] sm:w-[calc(33.333%-10px)] xs:w-[calc(50%-8px)] pb-[16px]"
 	>
 		<div class="relative">
 			<img
 				loading="lazy"
-				src={data.sample.url}
+				src={postData.sample.url}
 				alt=""
 				class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
 				on:click={handleClickImage}
 			/>
-			{#if data.file.ext === 'webm'}
+			{#if postData.file.ext === 'webm'}
 				<div
 					class="absolute p-4 bg-slate-900 bg-opacity-40 backdrop-blur-sm rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
 				>
@@ -84,13 +85,13 @@
 					<p class="text-slate-100">{numberToAbbreviatedString(favCount)}</p>
 				</button>
 			</div>
-			{#if data.rating === 's'}
+			{#if postData.rating === 's'}
 				<div
 					class="bg-yellow-400 text-yellow-900 font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center"
 				>
 					S
 				</div>
-			{:else if data.rating === 'q'}
+			{:else if postData.rating === 'q'}
 				<div
 					class="bg-orange-400 text-orange-900 font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center"
 				>

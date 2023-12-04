@@ -1,25 +1,18 @@
-<script>
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+<script lang="ts">
+	import { onMount, onDestroy } from 'svelte';
 	import Plyr from 'plyr';
 	import 'plyr/dist/plyr.css';
 
-	export let eventsToEmit = [];
-	export let player = {};
-	let plyrDiv;
-	const dispatch = createEventDispatcher();
+	let player: Plyr;
+	let plyrDiv: HTMLDivElement;
 
 	onMount(async () => {
-		player = new Plyr(plyrDiv.firstChild, $$restProps);
-		eventsToEmit.forEach((event) => dispatchOnPlayerEvent(event));
+		player = new Plyr(plyrDiv.firstChild as HTMLElement, $$restProps as Plyr.Options);
 	});
 
 	onDestroy(() => {
 		player.destroy();
 	});
-
-	function dispatchOnPlayerEvent(event) {
-		player.on(event, (data) => dispatch(event, data.detail.plyr));
-	}
 </script>
 
 <div bind:this={plyrDiv}>

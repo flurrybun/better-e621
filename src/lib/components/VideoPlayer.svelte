@@ -1,11 +1,18 @@
-<script>
+<script lang="ts">
+	import type { Post } from '$lib/types';
 	import SveltePlyr from './SveltePlyr.svelte';
 
-	export let data;
+	export let postData: Post;
 
-	const videos = Object.values(data.sample.alternates);
+	const videos = Object.values(postData.sample.alternates);
 	const videoUrls = videos.map((video) => '/api/proxy?q=' + video.urls.find((url) => url !== null));
 	const videoWidths = videos.map((video) => video.width);
+
+	//workaround since size is an invalid attribute for source
+	let sources = '';
+	videoUrls.forEach((videoUrl, index) => {
+		sources += `<source src="${videoUrl}" size="${videoWidths[index]}" />`;
+	});
 
 	const plyrConfig = {
 		quality: {
@@ -18,9 +25,9 @@
 
 <SveltePlyr {...plyrConfig}>
 	<!-- svelte-ignore a11y-media-has-caption -->
-	<video poster={data.sample.url} src={videoUrls[0]}>
+	<video poster={postData.sample.url} src={videoUrls[0]}>
 		{#each videoUrls as videoUrl, index}
-			<source src={videoUrl} size={videoWidths[index]} />
+			{@html sources}
 		{/each}
 	</video>
 </SveltePlyr>

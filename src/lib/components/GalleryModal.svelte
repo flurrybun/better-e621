@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { closeModal } from 'svelte-modals';
@@ -12,25 +12,14 @@
 
 	const fetchNextPage = $page.data.fetchNextPage;
 
-	let posts_value;
-	let allDataFetched_value;
-
-	posts.subscribe((value) => {
-		posts_value = value;
-	});
-
-	allDataFetched.subscribe((value) => {
-		allDataFetched_value = value;
-	});
-
-	export let isOpen;
-	export let postIndex;
+	export let isOpen: boolean;
+	export let postIndex: number;
 
 	let currentPost = postIndex;
-	let postTransitionDirection; //-1 for left, 1 for right
-	let windowWidth;
-	let windowHeight;
-	let contentWidth;
+	let postTransitionDirection: 'left' | 'right' = 'right';
+	let windowWidth: number;
+	let windowHeight: number;
+	let contentWidth: number;
 	let isImageLoaded = false;
 
 	$: currentPost !== null && onContentChange();
@@ -41,9 +30,9 @@
 		isImageLoaded = false;
 
 		const img = new Image();
-		img.src = posts_value[currentPost + 1].file.url;
+		img.src = $posts[currentPost + 1].file.url;
 		const img2 = new Image();
-		img2.src = posts_value[currentPost + 1].preview.url;
+		img2.src = $posts[currentPost + 1].preview.url;
 	}
 
 	function getContentWidth() {
@@ -51,59 +40,61 @@
 		const containerHeight = windowHeight * 0.9;
 
 		const containerAspectRatio = containerWidth / containerHeight;
-		const contentAspectRatio =
-			posts_value[currentPost].file.width / posts_value[currentPost].file.height;
+		const contentAspectRatio = $posts[currentPost].file.width / $posts[currentPost].file.height;
 
 		if (contentAspectRatio < containerAspectRatio) {
 			contentWidth =
-				(containerHeight / posts_value[currentPost].file.height) *
-				posts_value[currentPost].file.width;
+				(containerHeight / $posts[currentPost].file.height) * $posts[currentPost].file.width;
 		} else {
 			contentWidth = containerWidth;
 		}
 	}
 
-	const handleKeyDown = (event) => {
-		switch (event.keyCode) {
-			case 37: //left arrow
+	const handleKeyDown = (e: KeyboardEvent) => {
+		switch (e.key) {
+			case 'ArrowLeft': //left arrow
 				previousPost();
 				break;
-			case 39: //right arrow
+			case 'ArrowRight': //right arrow
 				nextPost();
 				break;
-			case 32: //spacebar
+			case ' ': //spacebar
 				nextPost();
 				break;
-			case 27: //escape
+			case 'Escape': //escape
 				closeModal();
 				break;
 		}
 	};
 
 	const nextPost = () => {
-		if (currentPost + 5 === posts_value.length) fetchNextPage();
-		if (currentPost >= posts_value.length - 1 && allDataFetched_value) return;
-		postTransitionDirection = 1;
+		if (currentPost + 5 === $posts.length) fetchNextPage();
+		if (currentPost >= $posts.length - 1 && $allDataFetched) return;
+		postTransitionDirection = 'right';
 		currentPost++;
 	};
 
 	const previousPost = () => {
 		if (currentPost === 0) return;
-		postTransitionDirection = -1;
+		postTransitionDirection = 'left';
 		currentPost--;
 	};
 
-	const flyIn = (el) => {
+	const flyIn = (el: Element) => {
 		return fly(el, {
 			easing: sineOut,
 			duration: 100,
-			x: 200 * postTransitionDirection,
+			x: 200 * (postTransitionDirection === 'left' ? -1 : 1),
 			delay: 50
 		});
 	};
 
-	const flyOut = (el) => {
-		return fly(el, { easing: sineIn, duration: 100, x: -200 * postTransitionDirection });
+	const flyOut = (el: Element) => {
+		return fly(el, {
+			easing: sineIn,
+			duration: 100,
+			x: -200 * (postTransitionDirection === 'left' ? -1 : 1)
+		});
 	};
 </script>
 
@@ -137,24 +128,24 @@
 					</button>
 				{/if}
 				<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
-					{#if posts_value[currentPost].file.ext === 'webm'}
-						<VideoPlayer data={posts_value[currentPost]} />
+					{#if $posts[currentPost].file.ext === 'webm'}
+						<VideoPlayer postData={$posts[currentPost]} />
 					{:else}
 						<img
 							on:load={() => (isImageLoaded = true)}
-							src={posts_value[currentPost].file.url}
+							src={$posts[currentPost].file.url}
 							alt=""
 							class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
 							style="opacity: {isImageLoaded ? 1 : 0}"
 						/>
 						<img
-							src={posts_value[currentPost].preview.url}
+							src={$posts[currentPost].preview.url}
 							alt=""
 							class="w-full h-full shadow-2xl rounded-2xl absolute"
 						/>
 					{/if}
 				</div>
-				{#if !(currentPost >= posts_value.length - 1 && allDataFetched_value)}
+				{#if !(currentPost >= $posts.length - 1 && $allDataFetched)}
 					<button
 						class="text-slate-500 ml-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
 						on:click={nextPost}
