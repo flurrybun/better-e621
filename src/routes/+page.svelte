@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
 	import Masonry from '$lib/components/Masonry.svelte';
 	import { blacklistedTags } from '$lib/stores/settingsStore';
 	import { numberToAbbreviatedString } from '$lib/utils';
 	import SearchIcon from '~icons/feather/search';
-	import TagInput from '../lib/components/TagInput.svelte';
+	import TagInput from '$lib/components/TagInput.svelte';
 	import { invalidate } from '$app/navigation';
 
 	export let data;
 
-	let searchValue = data.searchValue;
+	let searchValue: string[] = data.searchQuery.split(' ');
 	let blacklistValue = $blacklistedTags;
 
 	$: blacklistedTags.set(blacklistValue);
@@ -16,9 +16,9 @@
 	function handleSearch() {
 		const url = new URL(window.location.href);
 		url.searchParams.set('q', searchValue.join(' '));
-		history.pushState({}, null, url);
+		history.pushState({}, '', url);
 
-		invalidate((url) => true);
+		invalidate(() => true);
 	}
 </script>
 
@@ -32,13 +32,6 @@
 			class="bg-slate-900 rounded-lg flex focus-within:outline-2 focus-within:outline outline-amber-400 outline-offset-[-2px]"
 			on:submit|preventDefault={handleSearch}
 		>
-			<!-- <input
-				type="search"
-				name="q"
-				bind:value={searchValue}
-				placeholder="Search"
-				class="placeholder:text-slate-600 bg-transparent pl-4 grow focus:outline-none focus:placeholder:text-slate-900"
-			/> -->
 			<div class="p-3 w-full">
 				<TagInput
 					bind:tags={searchValue}

@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
 	import XIcon from '~icons/feather/x';
 
-	export let tags = [];
+	export let tags: string[] = [];
 	export let placeholder = '';
 	export let doesEnterSubmit = false;
-	export let name = null;
+	export let name: string | null = null;
 	let inputValue = '';
 
-	function addTag(name) {
+	function addTag(name: string) {
 		if (name.trim() === '') return;
 
 		tags.push(name);
@@ -17,32 +17,32 @@
 	}
 
 	function removeTag(index = -1) {
-		if (index === -1) inputValue = tags.at(index);
+		if (index === -1) inputValue = tags.at(index) ?? '';
 
 		tags.splice(index, 1);
 		tags = tags;
 	}
 
-	function handleKeyDown(e) {
+	function handleKeyDown(e: KeyboardEvent) {
 		if (inputValue === undefined) return;
 
-		switch (e.keyCode) {
-			case 13: //enter key
+		switch (e.key) {
+			case 'Enter': //enter key
 				e.preventDefault();
 				addTag(inputValue);
 				break;
-			case 188: //comma key
+			case ',': //comma key
 				e.preventDefault();
 				addTag(inputValue);
 				break;
-			case 32: //spacebar
+			case ' ': //spacebar
 				if (doesEnterSubmit) {
 					e.preventDefault();
 					addTag(inputValue);
 				}
 				break;
-			case 8: //backspace key
-				if (inputValue.trim() === '' && e.target.selectionStart === 0) {
+			case 'Backspace': //backspace key
+				if (inputValue.trim() === '' && (e.target as HTMLInputElement).selectionStart === 0) {
 					e.preventDefault();
 					removeTag();
 				}

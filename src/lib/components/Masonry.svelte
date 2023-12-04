@@ -1,16 +1,19 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { postsPerPage } from '$lib/stores/settingsStore';
 	import { MasonryInfiniteGrid } from '@egjs/svelte-infinitegrid';
-	import { allDataFetched, posts } from '../stores/postsStore';
+	import { allDataFetched, posts } from '$lib/stores/postsStore';
 	import PostCard from './PostCard.svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;
 
 	let finishedRendering = false;
-	let items = [];
+	let items: {
+		groupKey: number;
+		key: number;
+	}[] = [];
 
-	async function requestAppend({ detail: e }) {
+	const requestAppend = async ({ detail: e }) => {
 		if (finishedRendering) return;
 
 		e.wait();
@@ -36,11 +39,11 @@
 		}));
 
 		items = [...items, ...nextItems];
-	}
+	};
 </script>
 
 <MasonryInfiniteGrid {items} on:requestAppend={requestAppend} let:visibleItems>
 	{#each visibleItems as { key }}
-		<PostCard data={$posts[key]} postIndex={key} />
+		<PostCard postData={$posts[key]} postIndex={key} />
 	{/each}
 </MasonryInfiniteGrid>
