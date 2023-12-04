@@ -1,3 +1,5 @@
+import type { PageLoad } from './$types';
+
 import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore.js';
 import { postsPerPage } from '$lib/stores/settingsStore.js';
 
@@ -17,7 +19,7 @@ allDataFetched.subscribe((value) => {
 	allDataFetched_value = value;
 });
 
-export async function load({ url, fetch }) {
+export const load: PageLoad = async ({ url, fetch }) => {
 	const searchQuery = url.searchParams.get('q') || '';
 
 	posts.set([]);
@@ -92,4 +94,4 @@ export async function load({ url, fetch }) {
 		fetchNextPage,
 		relatedTags: fetchRelatedTags()
 	};
-}
+};
