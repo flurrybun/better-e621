@@ -65,3 +65,15 @@ export type Post = {
 	has_notes: boolean;
 	duration: number | null;
 };
+
+export type Tag = {
+	id: number;
+	name: string;
+	post_count: number;
+	related_tags: string;
+	related_tags_updated_at: string;
+	category: number;
+	is_locked: boolean;
+	created_at: string;
+	updated_at: string;
+};
