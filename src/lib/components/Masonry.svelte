@@ -1,8 +1,8 @@
 <script>
 	import { page } from '$app/stores';
-	import { postsPerPage } from '$lib/stores/settingsStore.js';
+	import { postsPerPage } from '$lib/stores/settingsStore';
 	import { MasonryInfiniteGrid } from '@egjs/svelte-infinitegrid';
-	import { allDataFetched, posts } from '../stores/postsStore.js';
+	import { allDataFetched, posts } from '../stores/postsStore';
 	import PostCard from './PostCard.svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;

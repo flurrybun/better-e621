@@ -1,8 +1,9 @@
+import { blacklistedTags, postsPerPage } from '$lib/stores/settingsStore';
+import type { Post } from '$lib/types';
 import { writable } from 'svelte/store';
-import { postsPerPage, blacklistedTags } from '$lib/stores/settingsStore.js';
 
-let postsPerPage_value;
-let blacklistedTags_value;
+let postsPerPage_value: number;
+let blacklistedTags_value: string[];
 
 postsPerPage.subscribe((value) => {
 	postsPerPage_value = value;
@@ -15,7 +16,7 @@ blacklistedTags.subscribe((value) => {
 export const posts = writable([]);
 export const allDataFetched = writable(false);
 
-export async function fetchPage(pageNumber, searchQuery) {
+export async function fetchPage(pageNumber: number, searchQuery: string | null): Promise<Post[]> {
 	let url = `https://e621.net/posts.json?limit=${postsPerPage_value}`;
 
 	if (searchQuery !== null) url += `&tags=${encodeURIComponent(searchQuery)}`;
@@ -24,7 +25,7 @@ export async function fetchPage(pageNumber, searchQuery) {
 	const res = await fetch(url);
 
 	if (res.ok) {
-		const data = await res.json();
+		const data: { posts: Post[] } = await res.json();
 
 		if (data.posts.length === 0) {
 			allDataFetched.set(true);
@@ -38,27 +39,21 @@ export async function fetchPage(pageNumber, searchQuery) {
 	throw new Error('Failed to fetch data');
 }
 
-function isPostBlacklisted(post) {
+function isPostBlacklisted(post: Post): boolean {
 	const postTags = Object.values(post.tags).reduce((acc, arr) => acc.concat(arr), []);
 
-	//if at least one blacklist matches, then the post is blacklisted
 	return blacklistedTags_value.some((blacklistedTag) => {
 		const splitBlacklistedTags = blacklistedTag.split(' ');
 
-		//every tag inside a single blacklist must be true in order for the post to be blacklisted
-		//e.g. for the blacklist 'male solo', the post must have male AND solo in order to be blacklisted
 		return splitBlacklistedTags.every((splitBlacklistedTag) => {
-			//invert result if tag starts with a minus sign
 			let isNegated = false;
 			if (splitBlacklistedTag.startsWith('-')) isNegated = true;
 
-			//check blacklist tag against the post's tags
 			return (
 				isNegated !==
 				postTags.some((postTag) => {
 					if (isNegated === true) splitBlacklistedTag = splitBlacklistedTag.replace(/-/g, '');
 
-					//catch special cases such as rating:s or type:webm
 					if (splitBlacklistedTag.includes(':')) {
 						const key = splitBlacklistedTag.split(':')[0];
 						const value = splitBlacklistedTag.split(':')[1];

@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 
-import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore.js';
-import { postsPerPage } from '$lib/stores/settingsStore.js';
+import { posts, allDataFetched, fetchPage } from '$lib/stores/postsStore';
+import { postsPerPage } from '$lib/stores/settingsStore';
 
 let postsPerPage_value;
 let posts_value;

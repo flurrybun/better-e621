@@ -5,7 +5,7 @@
 	import PlayIcon from '~icons/feather/play';
 	import { openModal } from 'svelte-modals';
 	import GalleryModal from './GalleryModal.svelte';
-	import { numberToAbbreviatedString } from '$lib/utils.js';
+	import { numberToAbbreviatedString } from '$lib/utils';
 
 	export let data;
 	export let postIndex;
