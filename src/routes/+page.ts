@@ -39,54 +39,26 @@ export const load: PageLoad = async ({ url, fetch }) => {
 		return posts_value;
 	}
 
-	async function fetchRelatedTags() {
-		let searchedTags = searchQuery.replace(/[*~]/g, '').split(' ');
+	async function fetchRelatedTags(): Promise<Tag[]> {
+		const searchedTags = searchQuery.replace(/[~]/g, '').split(' ');
 
-		searchedTags = searchedTags.filter((tag) => {
-			return !(tag.includes(':') || tag.includes('*') || tag.includes('-')) && tag !== '';
-		});
-
-		let res;
-
-		if (searchedTags.length > 0) {
-			res = await fetch(`https://e621.net/tags.json?search[name]=${searchedTags.toString()}`);
-		} else {
-			res = await fetch(`https://e621.net/tags.json?search[order]=count`);
-		}
-
-		if (!res.ok) throw new Error('Failed to fetch tags');
-		const data: Tag[] = await res.json();
-
-		let relatedTags: string[] = [];
-
-		data.forEach((tag) => {
-			const individualRelatedTags = tag.related_tags
-				.split(' ')
-				.filter((tag, index) => index % 2 == 0 && !searchedTags.includes(tag));
-
-			relatedTags = [...relatedTags, ...individualRelatedTags];
-		});
-
-		const res2 = await fetch(
-			`https://e621.net/tags.json?search[name]=${relatedTags.slice(0, 50).toString()}`
+		const response = await fetch(
+			'/api/related_tags?' +
+				new URLSearchParams({
+					tags: searchedTags.toString()
+				}),
+			{
+				method: 'GET',
+				headers: {
+					'content-type': 'application/json'
+				}
+			}
 		);
 
-		if (!res2.ok) throw new Error('Failed to fetch tags');
-		const data2: Tag[] = await res2.json();
+		if (!response.ok) throw new Error('Failed to fetch data');
 
-		data2.sort((a, b) => {
-			return b.post_count - a.post_count;
-		});
-
-		const formattedTags = data2.map((tag) => {
-			return {
-				name: tag.name,
-				id: tag.id,
-				count: tag.post_count
-			};
-		});
-
-		return formattedTags.slice(0, 20);
+		const tags: Tag[] = await response.json();
+		return tags;
 	}
 
 	return {

@@ -53,7 +53,7 @@
 				{#each data.relatedTags as tag (tag.id)}
 					<li class={tag.name.length > 14 ? 'col-span-2' : ''}>
 						{tag.name}
-						<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.count)}</span>
+						<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.postCount)}</span>
 					</li>
 				{/each}
 			</ol>

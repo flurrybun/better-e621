@@ -96,7 +96,7 @@ export type Post = {
 	isFavorited: boolean;
 };
 
-export type Tag = {
+export type e621Tag = {
 	id: number;
 	name: string;
 	post_count: number;
@@ -106,4 +106,11 @@ export type Tag = {
 	is_locked: boolean;
 	created_at: string;
 	updated_at: string;
+};
+
+export type Tag = {
+	id: number;
+	name: string;
+	category: string;
+	postCount: number;
 };
