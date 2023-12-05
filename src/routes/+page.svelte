@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Masonry from '$lib/components/Masonry.svelte';
+	import TagInput from '$lib/components/TagInput.svelte';
 	import { blacklistedTags } from '$lib/stores/settingsStore';
 	import { numberToAbbreviatedString } from '$lib/utils';
 	import SearchIcon from '~icons/feather/search';
-	import TagInput from '$lib/components/TagInput.svelte';
-	import { invalidate } from '$app/navigation';
 
 	export let data;
 
@@ -14,11 +14,9 @@
 	$: blacklistedTags.set(blacklistValue);
 
 	function handleSearch() {
-		const url = new URL(window.location.href);
+		const url = new URL(location.href);
 		url.searchParams.set('q', searchValue.join(' '));
-		history.pushState({}, '', url);
-
-		invalidate(() => true);
+		goto(url, { replaceState: true });
 	}
 </script>
 
