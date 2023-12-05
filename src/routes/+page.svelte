@@ -33,12 +33,7 @@
 			on:submit|preventDefault={handleSearch}
 		>
 			<div class="p-3 w-full">
-				<TagInput
-					bind:tags={searchValue}
-					placeholder="Search posts"
-					name="q"
-					doesEnterSubmit={true}
-				/>
+				<TagInput bind:tags={searchValue} placeholder="Search posts" name="q" canSubmit />
 			</div>
 			<button
 				type="submit"

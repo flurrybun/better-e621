@@ -3,7 +3,7 @@
 
 	export let tags: string[] = [];
 	export let placeholder = '';
-	export let doesEnterSubmit = false;
+	export let canSubmit = false;
 	export let name: string | null = null;
 	let inputValue = '';
 
@@ -24,6 +24,12 @@
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
+		const isEmpty = inputValue.trim() === '' && (e.target as HTMLInputElement).selectionStart === 0;
+
+		//if canSubmit is true, allow the user to submit when they press enter only if the form is empty
+		if (canSubmit && isEmpty && e.key === 'Enter') return;
+
+		//not sure why the input is undefined sometimes, but it just is
 		if (inputValue === undefined) return;
 
 		switch (e.key) {
@@ -36,13 +42,13 @@
 				addTag(inputValue);
 				break;
 			case ' ': //spacebar
-				if (doesEnterSubmit) {
+				if (canSubmit) {
 					e.preventDefault();
 					addTag(inputValue);
 				}
 				break;
 			case 'Backspace': //backspace key
-				if (inputValue.trim() === '' && (e.target as HTMLInputElement).selectionStart === 0) {
+				if (isEmpty) {
 					e.preventDefault();
 					removeTag();
 				}
