@@ -4,20 +4,18 @@
 
 	export let postData: Post;
 
-	const videos = Object.values(postData.sample.alternates);
-	const videoUrls = videos.map((video) => '/api/proxy?q=' + video.urls.find((url) => url !== null));
-	const videoWidths = videos.map((video) => video.width);
+	const videos = postData.files;
 
 	//workaround since size is an invalid attribute for source
 	let sources = '';
-	videoUrls.forEach((videoUrl, index) => {
-		sources += `<source src="${videoUrl}" size="${videoWidths[index]}" />`;
+	videos.forEach((video) => {
+		sources += `<source src="/api/proxy?q=${video.url}" size="${video.width}" />`;
 	});
 
 	const plyrConfig = {
 		quality: {
-			default: videoWidths[0],
-			options: [...videoWidths]
+			default: videos[0].width,
+			options: videos.map((video) => video.width)
 		},
 		playsinline: true
 	};
@@ -25,10 +23,8 @@
 
 <SveltePlyr {...plyrConfig}>
 	<!-- svelte-ignore a11y-media-has-caption -->
-	<video poster={postData.sample.url} src={videoUrls[0]}>
-		{#each videoUrls as videoUrl, index}
-			{@html sources}
-		{/each}
+	<video poster={postData.thumbnail?.toString()} src={videos[0].url.toString()}>
+		{@html sources}
 	</video>
 </SveltePlyr>
 

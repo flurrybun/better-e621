@@ -1,14 +1,9 @@
-import { blacklistedTags, postsPerPage } from '$lib/stores/settingsStore';
+import { blacklistedTags } from '$lib/stores/settingsStore';
 import type { Post } from '$lib/types';
 import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 
-let postsPerPage_value: number;
 let blacklistedTags_value: string[];
-
-postsPerPage.subscribe((value) => {
-	postsPerPage_value = value;
-});
 
 blacklistedTags.subscribe((value) => {
 	blacklistedTags_value = value;
@@ -18,30 +13,31 @@ export const posts: Writable<Post[]> = writable([]);
 export const allDataFetched: Writable<boolean> = writable(false);
 
 export async function fetchPage(pageNumber: number, searchQuery: string | null): Promise<Post[]> {
-	let url = `https://e621.net/posts.json?limit=${postsPerPage_value}`;
-
-	if (searchQuery !== null) url += `&tags=${encodeURIComponent(searchQuery)}`;
-	url += `&page=${pageNumber}`;
-
-	const res = await fetch(url);
-
-	if (res.ok) {
-		const data: { posts: Post[] } = await res.json();
-
-		if (data.posts.length === 0) {
-			allDataFetched.set(true);
+	const res = await fetch(
+		'/api/posts?' +
+			new URLSearchParams({
+				tags: searchQuery ?? '',
+				page: pageNumber.toString()
+			}),
+		{
+			method: 'GET',
+			headers: {
+				'content-type': 'application/json'
+			}
 		}
+	);
 
-		const posts = data.posts.filter((post) => !isPostBlacklisted(post));
+	if (!res.ok) throw new Error('Failed to fetch data');
 
-		return posts;
-	}
+	const posts: Post[] = await res.json();
 
-	throw new Error('Failed to fetch data');
+	if (posts.length === 0) allDataFetched.set(true);
+
+	return posts.filter((post) => !isPostBlacklisted(post));
 }
 
 function isPostBlacklisted(post: Post): boolean {
-	const postTags = Object.values(post.tags).reduce((acc, arr) => acc.concat(arr), []);
+	const tags = post.tags.map((tag) => tag.name);
 
 	return blacklistedTags_value.some((blacklistedTag) => {
 		const splitBlacklistedTags = blacklistedTag.split(' ');
@@ -52,7 +48,7 @@ function isPostBlacklisted(post: Post): boolean {
 
 			return (
 				isNegated !==
-				postTags.some((postTag) => {
+				tags.some((postTag) => {
 					if (isNegated === true) splitBlacklistedTag = splitBlacklistedTag.replace(/-/g, '');
 
 					if (splitBlacklistedTag.includes(':')) {
@@ -60,7 +56,7 @@ function isPostBlacklisted(post: Post): boolean {
 						const value = splitBlacklistedTag.split(':')[1];
 
 						if (key === 'rating') return value === post.rating;
-						if (key === 'type') return value === post.file.ext;
+						if (key === 'type') return value === post.extension;
 					}
 
 					return postTag === splitBlacklistedTag;

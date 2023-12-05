@@ -1,11 +1,11 @@
-export type Post = {
+export type e621Post = {
 	id: number;
 	created_at: string;
 	updated_at: string;
 	file: {
 		width: number;
 		height: number;
-		ext: 'png' | 'jpg' | 'gif' | 'apng' | 'webm' | 'swf';
+		ext: 'png' | 'jpg' | 'gif' | 'webm' | 'swf';
 		size: number;
 		md5: string;
 		url: string;
@@ -71,6 +71,29 @@ export type Post = {
 	is_favorited: boolean;
 	has_notes: boolean;
 	duration: number | null;
+};
+
+export type File = {
+	width: number;
+	height: number;
+	url: URL;
+};
+
+export type Post = {
+	id: number;
+	type: 'image' | 'video' | 'flash';
+	extension: 'png' | 'jpg' | 'gif' | 'webm' | 'swf';
+	files: File[];
+	thumbnail: URL;
+	tags: {
+		name: string;
+		category: string;
+	}[];
+	rating: 's' | 'q' | 'e';
+	score: number;
+	vote: 'up' | 'down' | null;
+	favoriteCount: number;
+	isFavorited: boolean;
 };
 
 export type Tag = {

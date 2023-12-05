@@ -14,8 +14,8 @@
 	let voteStatus = 0;
 	let isFavorited = false;
 
-	$: postScore = postData?.score.total + voteStatus;
-	$: favCount = postData?.fav_count + (isFavorited ? 1 : 0);
+	$: postScore = postData?.score + voteStatus;
+	$: favCount = postData?.favoriteCount + (isFavorited ? 1 : 0);
 
 	const updateVote = (vote: -1 | 1) => {
 		if (voteStatus === vote) {
@@ -39,12 +39,12 @@
 		<div class="relative">
 			<img
 				loading="lazy"
-				src={postData.sample.url}
+				src={postData.thumbnail.toString()}
 				alt=""
 				class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
 				on:click={handleClickImage}
 			/>
-			{#if postData.file.ext === 'webm'}
+			{#if postData.type === 'video'}
 				<div
 					class="absolute p-4 bg-slate-900 bg-opacity-40 backdrop-blur-sm rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
 				>

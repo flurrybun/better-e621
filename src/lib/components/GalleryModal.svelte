@@ -30,21 +30,23 @@
 		isImageLoaded = false;
 
 		const img = new Image();
-		img.src = $posts[currentPost + 1].file.url;
+		img.src = $posts[currentPost + 1].files.at(-1)?.url.toString() ?? '';
 		const img2 = new Image();
-		img2.src = $posts[currentPost + 1].preview.url;
+		img2.src = $posts[currentPost + 1].files.at(0)?.url.toString() ?? '';
 	}
 
 	function getContentWidth() {
 		const containerWidth = windowWidth * 0.8;
 		const containerHeight = windowHeight * 0.9;
 
+		const postWidth = $posts[currentPost].files.at(-1)?.width ?? 1;
+		const postHeight = $posts[currentPost].files.at(-1)?.height ?? 1;
+
 		const containerAspectRatio = containerWidth / containerHeight;
-		const contentAspectRatio = $posts[currentPost].file.width / $posts[currentPost].file.height;
+		const contentAspectRatio = postWidth / postHeight;
 
 		if (contentAspectRatio < containerAspectRatio) {
-			contentWidth =
-				(containerHeight / $posts[currentPost].file.height) * $posts[currentPost].file.width;
+			contentWidth = (containerHeight / postHeight) * postWidth;
 		} else {
 			contentWidth = containerWidth;
 		}
@@ -128,18 +130,18 @@
 					</button>
 				{/if}
 				<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
-					{#if $posts[currentPost].file.ext === 'webm'}
+					{#if $posts[currentPost].type === 'video'}
 						<VideoPlayer postData={$posts[currentPost]} />
 					{:else}
 						<img
 							on:load={() => (isImageLoaded = true)}
-							src={$posts[currentPost].file.url}
+							src={$posts[currentPost].files.at(-1)?.url.toString()}
 							alt=""
 							class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
 							style="opacity: {isImageLoaded ? 1 : 0}"
 						/>
 						<img
-							src={$posts[currentPost].preview.url}
+							src={$posts[currentPost].files.at(0)?.url.toString()}
 							alt=""
 							class="w-full h-full shadow-2xl rounded-2xl absolute"
 						/>
