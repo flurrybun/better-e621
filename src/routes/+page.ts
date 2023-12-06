@@ -62,8 +62,10 @@ export const load: PageLoad = async ({ url, fetch }) => {
 	}
 
 	return {
+		streamed: {
+			relatedTags: fetchRelatedTags()
+		},
 		searchQuery,
-		fetchNextPage,
-		relatedTags: fetchRelatedTags()
+		fetchNextPage
 	};
 };

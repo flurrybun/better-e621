@@ -42,14 +42,18 @@
 		</form>
 		<div class="bg-slate-900 rounded-lg p-8 mt-6">
 			<h2 class="text-2xl font-semibold mb-3">Related tags</h2>
-			<ol class="text-slate-400 grid grid-cols-2 grid-flow-dense">
-				{#each data.relatedTags as tag (tag.id)}
-					<li class={tag.name.length > 14 ? 'col-span-2' : ''}>
-						{tag.name}
-						<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.postCount)}</span>
-					</li>
-				{/each}
-			</ol>
+			{#await data.streamed.relatedTags}
+				<p class="text-slate-400">Loading...</p>
+			{:then relatedTags}
+				<ol class="text-slate-400 grid grid-cols-2 grid-flow-dense">
+					{#each relatedTags as tag (tag.id)}
+						<li class={tag.name.length > 14 ? 'col-span-2' : ''}>
+							{tag.name}
+							<span class="text-slate-600 text-xs">{numberToAbbreviatedString(tag.postCount)}</span>
+						</li>
+					{/each}
+				</ol>
+			{/await}
 		</div>
 		<div class="bg-slate-900 rounded-lg p-8 mt-6">
 			<h2 class="text-2xl font-semibold mb-3">Blacklisted tags</h2>
@@ -60,7 +64,9 @@
 			</div>
 		</div>
 	</aside>
-	{#key data.searchQuery}
+	{#await data.fetchNextPage()}
+		<p class="text-slate-400">Loading...</p>
+	{:then _}
 		<Masonry />
-	{/key}
+	{/await}
 </div>
