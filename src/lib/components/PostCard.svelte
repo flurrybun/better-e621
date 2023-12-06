@@ -6,6 +6,7 @@
 	import ArrowUpIcon from '~icons/feather/arrow-up';
 	import HeartIcon from '~icons/feather/heart';
 	import PlayIcon from '~icons/feather/play';
+	import FlashWarning from './FlashWarning.svelte';
 	import GalleryModal from './GalleryModal.svelte';
 
 	export let postData: Post;
@@ -38,18 +39,24 @@
 {#if postData}
 	<div class="pb-[16px]" style="width: {itemWidth}">
 		<div class="relative">
-			<img
-				loading="lazy"
-				src={postData.thumbnail.toString()}
-				alt=""
-				class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
-				on:click={handleClickImage}
-			/>
-			{#if postData.type === 'video'}
-				<div
-					class="absolute p-4 bg-slate-900 bg-opacity-40 backdrop-blur-sm rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-				>
-					<PlayIcon class="text-slate-100 text-xl" />
+			{#if postData.type !== 'flash'}
+				<img
+					loading="lazy"
+					src={postData.thumbnail.toString()}
+					alt=""
+					class="w-full rounded-t-lg min-h-[12rem] max-h-96 cursor-pointer object-cover"
+					on:click={handleClickImage}
+				/>
+				{#if postData.type === 'video'}
+					<div
+						class="absolute p-4 bg-slate-900 bg-opacity-40 backdrop-blur-sm rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+					>
+						<PlayIcon class="text-slate-100 text-xl" />
+					</div>
+				{/if}
+			{:else}
+				<div class="bg-slate-900 rounded-t-lg">
+					<FlashWarning downloadUrl={postData.files[0].url} />
 				</div>
 			{/if}
 		</div>

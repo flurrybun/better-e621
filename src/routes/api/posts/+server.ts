@@ -64,6 +64,14 @@ export const GET: RequestHandler = async ({ url }) => {
 					url: new URL(post.file.url)
 				}
 			];
+		} else {
+			files = [
+				{
+					width: post.file.width,
+					height: post.file.height,
+					url: new URL(post.file.url)
+				}
+			];
 		}
 
 		return {

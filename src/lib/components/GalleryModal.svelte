@@ -8,6 +8,7 @@
 	import ChevronRight from '~icons/feather/chevron-right';
 	import X from '~icons/feather/x';
 	import { allDataFetched, posts } from '../stores/postsStore';
+	import FlashWarning from './FlashWarning.svelte';
 	import VideoPlayer from './VideoPlayer.svelte';
 
 	const fetchNextPage = $page.data.fetchNextPage;
@@ -136,24 +137,31 @@
 						<ChevronLeft />
 					</button>
 				{/if}
-				<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
-					{#if $posts[currentPost].type === 'video'}
-						<VideoPlayer postData={$posts[currentPost]} />
-					{:else}
-						<img
-							on:load={() => (isImageLoaded = true)}
-							src={$posts[currentPost].files.at(-1)?.url.toString()}
-							alt=""
-							class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
-							style="opacity: {isImageLoaded ? 1 : 0}"
-						/>
-						<img
-							src={$posts[currentPost].files.at(0)?.url.toString()}
-							alt=""
-							class="w-full h-full shadow-2xl rounded-2xl absolute"
-						/>
-					{/if}
-				</div>
+				{#if $posts[currentPost].type !== 'flash'}
+					<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
+						{#if $posts[currentPost].type === 'video'}
+							<VideoPlayer postData={$posts[currentPost]} />
+						{:else}
+							<img
+								on:load={() => (isImageLoaded = true)}
+								src={$posts[currentPost].files.at(-1)?.url.toString()}
+								alt=""
+								class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
+								style="opacity: {isImageLoaded ? 1 : 0}"
+							/>
+							<img
+								src={$posts[currentPost].files.at(0)?.url.toString()}
+								alt=""
+								class="w-full h-full shadow-2xl rounded-2xl absolute"
+							/>
+						{/if}
+					</div>
+				{:else}
+					<FlashWarning
+						class="bg-slate-900 shadow-xl rounded-xl max-w-[25rem]"
+						downloadUrl={$posts[currentPost].files[0].url}
+					/>
+				{/if}
 				{#if !(currentPost >= $posts.length - 1 && $allDataFetched)}
 					<button
 						class="text-slate-500 ml-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
