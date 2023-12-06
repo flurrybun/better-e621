@@ -42,10 +42,15 @@
 
 		items = [...items, ...getItems(groupKey)];
 	};
+
+	let masonryWidth: number;
+	$: columns = masonryWidth ? Math.floor(masonryWidth / 275) : 1;
 </script>
 
-<MasonryInfiniteGrid {items} on:requestAppend={requestAppend} let:visibleItems>
-	{#each visibleItems as { key }}
-		<PostCard postData={$posts[key]} postIndex={key} />
-	{/each}
-</MasonryInfiniteGrid>
+<div bind:clientWidth={masonryWidth}>
+	<MasonryInfiniteGrid {items} on:requestAppend={requestAppend} let:visibleItems>
+		{#each visibleItems as { key }}
+			<PostCard postData={$posts[key]} postIndex={key} {columns} />
+		{/each}
+	</MasonryInfiniteGrid>
+</div>

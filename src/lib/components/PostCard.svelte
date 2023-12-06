@@ -10,6 +10,9 @@
 
 	export let postData: Post;
 	export let postIndex: number;
+	export let columns: number;
+
+	$: itemWidth = `calc(${100 / columns}% - ${(16 * (columns - 1)) / columns}px)`;
 
 	let voteStatus = 0;
 	let isFavorited = false;
@@ -33,9 +36,7 @@
 </script>
 
 {#if postData}
-	<div
-		class="inline-block 3xl:w-[calc(25%-12px)] xl:w-[calc(33.333%-10px)] lg:w-[calc(50%-8px)] sm:w-[calc(33.333%-10px)] xs:w-[calc(50%-8px)] pb-[16px]"
-	>
+	<div class="pb-[16px]" style="width: {itemWidth}">
 		<div class="relative">
 			<img
 				loading="lazy"

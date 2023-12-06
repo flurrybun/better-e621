@@ -20,7 +20,7 @@
 	}
 </script>
 
-<div class="container mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
+<div class="mx-auto px-4 pt-4 gap-6 grid lg:grid-cols-[350px_1fr] grid-cols-1">
 	<aside class="hidden lg:block">
 		<div class="flex items-end mb-4 gap-2">
 			<img src="/images/logo.svg" alt="Logo" />
