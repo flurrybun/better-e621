@@ -29,6 +29,9 @@
 		getContentWidth();
 		isImageLoaded = false;
 
+		if (!$posts[currentPost + 1]) return;
+
+		//prefetch next image to speed image loads
 		const img = new Image();
 		img.src = $posts[currentPost + 1].files.at(-1)?.url.toString() ?? '';
 		const img2 = new Image();
@@ -70,14 +73,18 @@
 	};
 
 	const nextPost = () => {
-		if (currentPost + 5 === $posts.length) fetchNextPage();
 		if (currentPost >= $posts.length - 1 && $allDataFetched) return;
+		if (!$posts[currentPost + 1]) return;
+
+		if (currentPost + 5 === $posts.length && !$allDataFetched) fetchNextPage();
+
 		postTransitionDirection = 'right';
 		currentPost++;
 	};
 
 	const previousPost = () => {
 		if (currentPost === 0) return;
+
 		postTransitionDirection = 'left';
 		currentPost--;
 	};
