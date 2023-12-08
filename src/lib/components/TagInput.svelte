@@ -2,6 +2,8 @@
 	import XIcon from '~icons/feather/x';
 
 	export let tags: string[] = [];
+	export let input: HTMLInputElement | undefined = undefined;
+
 	export let placeholder = '';
 	export let canSubmit = false;
 	export let name: string | null = null;
@@ -26,7 +28,7 @@
 	function handleKeyDown(e: KeyboardEvent) {
 		const isEmpty = inputValue.trim() === '' && (e.target as HTMLInputElement).selectionStart === 0;
 
-		//if canSubmit is true, allow the user to submit when they press enter only if the form is empty
+		//allow the user to submit when they press enter only if the form is empty
 		if (canSubmit && isEmpty && e.key === 'Enter') return;
 
 		//not sure why the input is undefined sometimes, but it just is
@@ -72,6 +74,7 @@
 	<div class="flex-1">
 		<input
 			type="text"
+			bind:this={input}
 			{name}
 			placeholder={tags.length === 0 ? placeholder : ''}
 			bind:value={inputValue}
