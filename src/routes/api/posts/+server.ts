@@ -32,64 +32,66 @@ export const GET: RequestHandler = async ({ url }) => {
 	const res = await response.json();
 	const posts: e621Post[] = res.posts;
 
-	const parsedPosts: Post[] = posts.map((post) => {
-		const fileType =
-			post.file.ext === 'swf' ? 'flash' : post.file.ext === 'webm' ? 'video' : 'image';
+	const parsedPosts: Post[] = posts
+		.filter((post) => post.file.url !== null)
+		.map((post) => {
+			const fileType =
+				post.file.ext === 'swf' ? 'flash' : post.file.ext === 'webm' ? 'video' : 'image';
 
-		let files: File[] = [];
+			let files: File[] = [];
 
-		if (fileType === 'video') {
-			files = Object.values(post.sample.alternates).map((video) => {
-				return {
-					width: video.width,
-					height: video.height,
-					url: new URL(video.urls.find((url) => url !== null) ?? '')
-				};
-			});
-		} else if (fileType === 'image') {
-			files = [
-				{
-					width: post.preview.width,
-					height: post.preview.height,
-					url: new URL(post.preview.url)
-				},
-				{
-					width: post.sample.width,
-					height: post.sample.height,
-					url: new URL(post.sample.url)
-				},
-				{
-					width: post.file.width,
-					height: post.file.height,
-					url: new URL(post.file.url)
-				}
-			];
-		} else {
-			files = [
-				{
-					width: post.file.width,
-					height: post.file.height,
-					url: new URL(post.file.url)
-				}
-			];
-		}
+			if (fileType === 'video') {
+				files = Object.values(post.sample.alternates).map((video) => {
+					return {
+						width: video.width,
+						height: video.height,
+						url: new URL(video.urls.find((url) => url !== null) ?? '')
+					};
+				});
+			} else if (fileType === 'image') {
+				files = [
+					{
+						width: post.preview.width,
+						height: post.preview.height,
+						url: new URL(post.preview.url)
+					},
+					{
+						width: post.sample.width,
+						height: post.sample.height,
+						url: new URL(post.sample.url)
+					},
+					{
+						width: post.file.width,
+						height: post.file.height,
+						url: new URL(post.file.url)
+					}
+				];
+			} else {
+				files = [
+					{
+						width: post.file.width,
+						height: post.file.height,
+						url: new URL(post.file.url)
+					}
+				];
+			}
 
-		return {
-			id: post.id,
-			type: fileType,
-			extension: post.file.ext,
-			files: files,
-			thumbnail: new URL(post.sample.url),
-			tags: Object.entries(post.tags).flatMap(([category, values]) =>
-				values.map((name) => ({ name, category }))
-			),
-			rating: post.rating,
-			score: post.score.total,
-			vote: null,
-			favoriteCount: post.fav_count,
-			isFavorited: post.is_favorited
-		};
-	});
+			return {
+				id: post.id,
+				type: fileType,
+				extension: post.file.ext,
+				files: files,
+				thumbnail: new URL(post.sample.url),
+				tags: Object.entries(post.tags).flatMap(([category, values]) =>
+					values.map((name) => ({ name, category }))
+				),
+				rating: post.rating,
+				score: post.score.total,
+				vote: null,
+				favoriteCount: post.fav_count,
+				isFavorited: post.is_favorited
+			};
+		});
 
 	return json(parsedPosts);
 };
