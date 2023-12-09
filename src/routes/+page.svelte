@@ -132,7 +132,7 @@
 </div>
 
 <div class="mx-auto px-3 gap-6 grid grid-cols-1 lg:grid-cols-[350px_1fr] lg:pt-4">
-	<aside class="hidden lg:block">
+	<aside class="hidden lg:block sticky top-4 h-screen overflow-y-scroll no-scrollbar">
 		<div class="flex items-end mb-4 gap-2">
 			<img src="/images/logo.svg" alt="Logo" />
 			<h1 class="text-2xl leading-[0.8] font-semibold">better e621</h1>
@@ -181,3 +181,14 @@
 		<Masonry />
 	{/await}
 </div>
+
+<style>
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+</style>
