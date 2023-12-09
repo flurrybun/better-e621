@@ -23,12 +23,20 @@
 	let contentWidth: number;
 	let isImageLoaded = false;
 
+	let touchStartX = 0;
+	let touchOffsetX = 0;
+	let isHoldingTouch = false;
+	let touchStartTime = 0;
+	let isUsingKeyboard = true;
+
 	$: currentPost !== null && onContentChange();
 	onMount(onContentChange);
 
 	function onContentChange() {
 		getContentWidth();
 		isImageLoaded = false;
+		touchStartX = 0;
+		touchOffsetX = 0;
 
 		if (!$posts[currentPost + 1]) return;
 
@@ -40,7 +48,7 @@
 	}
 
 	function getContentWidth() {
-		const containerWidth = windowWidth * 0.8;
+		const containerWidth = windowWidth * (windowWidth > 1024 ? 0.8 : 0.9);
 		const containerHeight = windowHeight * 0.9;
 
 		const postWidth = $posts[currentPost].files.at(-1)?.width ?? 1;
@@ -57,6 +65,8 @@
 	}
 
 	const handleKeyDown = (e: KeyboardEvent) => {
+		isUsingKeyboard = true;
+
 		switch (e.key) {
 			case 'ArrowLeft': //left arrow
 				previousPost();
@@ -106,6 +116,32 @@
 			x: -200 * (postTransitionDirection === 'left' ? -1 : 1)
 		});
 	};
+
+	function handleTouchStart(e: TouchEvent) {
+		touchStartX = e.changedTouches[0].clientX;
+		touchStartTime = Date.now();
+
+		isHoldingTouch = true;
+		isUsingKeyboard = false;
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		touchOffsetX = e.changedTouches[0].clientX - touchStartX;
+	}
+
+	function handleTouchEnd(e: TouchEvent) {
+		const timeDifference = Date.now() - touchStartTime;
+		const velocity = Math.abs(touchOffsetX) / timeDifference;
+		const direction = touchOffsetX > 0 ? 'right' : 'left';
+
+		touchOffsetX = 0;
+		isHoldingTouch = false;
+
+		if (velocity < 0.5) return;
+
+		if (direction === 'left') nextPost();
+		else previousPost();
+	}
 </script>
 
 <svelte:head>
@@ -126,17 +162,34 @@
 />
 
 {#if isOpen}
-	<div role="dialog" class="fixed inset-0 flex items-center justify-center">
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<div
+		class="fixed inset-0 flex items-center justify-center z-30"
+		role="dialog"
+		on:click={(e) => {
+			if (e.target === e.currentTarget) closeModal();
+		}}
+		on:touchmove={handleTouchMove}
+		on:touchstart={handleTouchStart}
+		on:touchend={handleTouchEnd}
+	>
 		{#key currentPost}
-			<div class="absolute flex items-center" in:flyIn out:flyOut>
-				{#if currentPost > 0}
-					<button
-						class="text-slate-500 mr-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
-						on:click={previousPost}
-					>
-						<ChevronLeft />
-					</button>
-				{/if}
+			<div
+				class="absolute flex items-center {!isHoldingTouch && !isUsingKeyboard
+					? 'duration-300'
+					: ''}"
+				style="transform: translateX({touchOffsetX}px);"
+				in:flyIn
+				out:flyOut
+			>
+				<button
+					class="hidden lg:grid text-slate-500 mr-3 w-9 h-9 place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
+					style="opacity: {currentPost > 0 ? 1 : 0}"
+					on:click={previousPost}
+				>
+					<ChevronLeft />
+				</button>
 				{#if $posts[currentPost].type !== 'flash'}
 					<div class="grid place-items-center relative" style={`width: ${contentWidth}px;`}>
 						{#if $posts[currentPost].type === 'video'}
@@ -146,7 +199,7 @@
 								on:load={() => (isImageLoaded = true)}
 								src={$posts[currentPost].files.at(-1)?.url.toString()}
 								alt=""
-								class="w-full h-full shadow-2xl rounded-2xl transition-opacity z-10"
+								class="w-full h-full shadow-2xl rounded-2xl z-50 transition-all"
 								style="opacity: {isImageLoaded ? 1 : 0}"
 							/>
 							<img
@@ -158,22 +211,21 @@
 					</div>
 				{:else}
 					<FlashWarning
-						class="bg-slate-900 shadow-xl rounded-xl max-w-[25rem]"
+						class="bg-slate-900 shadow-xl rounded-xl w-[25rem] max-w-[90vw]"
 						downloadUrl={$posts[currentPost].files[0].url}
 					/>
 				{/if}
-				{#if !(currentPost >= $posts.length - 1 && $allDataFetched)}
-					<button
-						class="text-slate-500 ml-3 w-9 h-9 grid place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
-						on:click={nextPost}
-					>
-						<ChevronRight />
-					</button>
-				{/if}
+				<button
+					class="hidden lg:grid text-slate-500 ml-3 w-9 h-9 place-items-center cursor-pointer rounded-full transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
+					style="opacity: {!(currentPost >= $posts.length - 1 && $allDataFetched) ? 1 : 0}"
+					on:click={nextPost}
+				>
+					<ChevronRight />
+				</button>
 			</div>
 		{/key}
 
-		<div class="absolute top-0 right-0 m-6">
+		<div class="hidden lg:block absolute top-0 right-0 m-6">
 			<button
 				class="bg-slate-800 text-slate-500 bg-opacity-40 rounded-md w-11 aspect-square grid place-items-center cursor-pointer transition-all hover:bg-slate-700 hover:bg-opacity-40 hover:text-slate-400"
 				on:click={closeModal}><X /></button
