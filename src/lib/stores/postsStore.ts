@@ -1,12 +1,17 @@
-import { blacklistedTags } from '$lib/stores/settingsStore';
+import { blacklistedTags, postsPerPage } from '$lib/stores/settingsStore';
 import type { Post } from '$lib/types';
 import type { Writable } from 'svelte/store';
 import { writable } from 'svelte/store';
 
 let blacklistedTags_value: string[];
+let postsPerPage_value: number;
 
 blacklistedTags.subscribe((value) => {
 	blacklistedTags_value = value;
+});
+
+postsPerPage.subscribe((value) => {
+	postsPerPage_value = value;
 });
 
 export const posts: Writable<Post[]> = writable([]);
@@ -17,7 +22,8 @@ export async function fetchPage(pageNumber: number, searchQuery: string | null):
 		'/api/posts?' +
 			new URLSearchParams({
 				tags: searchQuery ?? '',
-				page: pageNumber.toString()
+				page: pageNumber.toString(),
+				postsPerPage: postsPerPage_value.toString()
 			}),
 		{
 			method: 'GET',

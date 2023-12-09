@@ -1,23 +1,17 @@
 import type { e621Post, Post, File } from '$lib/types';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { postsPerPage } from '$lib/stores/settingsStore';
-
-let postsPerPage_value: number;
-
-postsPerPage.subscribe((value) => {
-	postsPerPage_value = value;
-});
 
 export const GET: RequestHandler = async ({ url }) => {
 	const tags = url.searchParams.get('tags') ?? '';
 	const pageNumber = url.searchParams.get('page') ?? '';
+	const postsPerPage = url.searchParams.get('postsPerPage') ?? '';
 
 	const response = await fetch(
 		'https://e621.net/posts.json?' +
 			new URLSearchParams({
 				tags: tags,
-				limit: postsPerPage_value.toString() ?? '',
+				limit: postsPerPage,
 				page: pageNumber
 			}),
 		{
