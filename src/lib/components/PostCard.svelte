@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isUserLoggedIn } from '$lib/stores/settingsStore';
 	import type { Post } from '$lib/types';
 	import { numberToAbbreviatedString } from '$lib/utils';
 	import { openModal } from 'svelte-modals';
@@ -40,6 +41,8 @@
 	<div class="pb-4" style="width: {itemWidth}">
 		<div class="relative">
 			{#if postData.type !== 'flash'}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				<img
 					loading="lazy"
 					src={postData.thumbnail.toString()}
@@ -62,55 +65,58 @@
 		</div>
 		<div class="p-3 bg-slate-900 rounded-b-lg flex justify-between">
 			<div class="flex items-center gap-2.5">
-				<div class="flex items-center gap-2.5">
+				{#if $isUserLoggedIn}
+					<div class="flex items-center gap-2.5">
+						<button
+							class="inactive"
+							class:active-upvote={voteStatus === 1}
+							on:click={() => updateVote(1)}
+						>
+							<ArrowUpIcon />
+						</button>
+						<p
+							class="text-lg"
+							class:text-amber-400={voteStatus === 1}
+							class:text-blue-400={voteStatus === -1}
+						>
+							{numberToAbbreviatedString(postScore)}
+						</p>
+						<button
+							class="inactive"
+							class:active-downvote={voteStatus === -1}
+							on:click={() => updateVote(-1)}
+						>
+							<ArrowDownIcon />
+						</button>
+					</div>
 					<button
-						class="inactive"
-						class:activeUpvote={voteStatus === 1}
-						on:click={() => updateVote(1)}
+						class="bg-slate-800 text-slate-400 rounded-full h-7 px-2.5 flex items-center gap-1.5"
+						on:click={() => (isFavorited = !isFavorited)}
 					>
-						<ArrowUpIcon />
+						<HeartIcon />
+						<p class="text-slate-100">{numberToAbbreviatedString(favCount)}</p>
 					</button>
-					<p
-						class="text-lg"
-						class:text-amber-400={voteStatus === 1}
-						class:text-blue-400={voteStatus === -1}
-					>
-						{numberToAbbreviatedString(postScore)}
-					</p>
-					<button
-						class="inactive"
-						class:activeDownvote={voteStatus === -1}
-						on:click={() => updateVote(-1)}
-					>
-						<ArrowDownIcon />
-					</button>
-				</div>
-				<button
-					class="bg-slate-800 text-slate-400 rounded-full h-7 px-2.5 flex items-center gap-1.5"
-					on:click={() => (isFavorited = !isFavorited)}
-				>
-					<HeartIcon style="" />
-					<p class="text-slate-100">{numberToAbbreviatedString(favCount)}</p>
-				</button>
+				{:else}
+					<div class="bg-slate-800 rounded-full h-7 px-2.5 pr-3 flex items-center gap-1">
+						{#if postScore >= 0}
+							<ArrowUpIcon class="text-slate-400" />
+						{:else}
+							<ArrowDownIcon class="text-slate-400" />
+						{/if}
+						<p>{numberToAbbreviatedString(postScore)}</p>
+					</div>
+					<div class="bg-slate-800 rounded-full h-7 px-2.5 pr-3 flex items-center gap-1.5">
+						<HeartIcon class="text-slate-400" />
+						<p>{numberToAbbreviatedString(favCount)}</p>
+					</div>
+				{/if}
 			</div>
 			{#if postData.rating === 's'}
-				<div
-					class="bg-yellow-400 text-yellow-900 font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center"
-				>
-					S
-				</div>
+				<div class="bg-yellow-400 text-yellow-900 rating">S</div>
 			{:else if postData.rating === 'q'}
-				<div
-					class="bg-orange-400 text-orange-900 font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center"
-				>
-					Q
-				</div>
+				<div class="bg-orange-400 text-orange-900 rating">Q</div>
 			{:else}
-				<div
-					class="bg-red-400 text-red-900 font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center"
-				>
-					E
-				</div>
+				<div class="bg-red-400 text-red-900 rating">E</div>
 			{/if}
 		</div>
 	</div>
@@ -121,11 +127,15 @@
 		@apply bg-slate-800 text-slate-400 rounded-full aspect-square w-7 grid place-items-center;
 	}
 
-	.activeUpvote {
+	.active-upvote {
 		@apply bg-amber-400 text-amber-900;
 	}
 
-	.activeDownvote {
+	.active-downvote {
 		@apply bg-blue-400 text-blue-900;
+	}
+
+	.rating {
+		@apply font-semibold text-lg rounded-full aspect-square w-7 grid place-items-center;
 	}
 </style>

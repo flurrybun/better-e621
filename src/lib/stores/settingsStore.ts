@@ -16,6 +16,7 @@ if (browser) {
 
 export const postsPerPage: Writable<number> = writable(50);
 export const blacklistedTags: Writable<string[]> = writable(initialBlacklistedTags);
+export const isUserLoggedIn: Writable<boolean> = writable(false);
 
 blacklistedTags.subscribe((value) => {
 	if (browser) localStorage.setItem('blacklistedTags', value.toString());
