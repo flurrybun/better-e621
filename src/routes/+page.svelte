@@ -131,7 +131,7 @@
 	{/if}
 </div>
 
-<div class="mx-auto px-3 gap-6 grid grid-cols-1 lg:grid-cols-[350px_1fr] lg:pt-4">
+<div class="mx-auto px-3 lg:px-4 gap-4 grid grid-cols-1 lg:grid-cols-[350px_1fr] lg:pt-4">
 	<aside class="hidden lg:block sticky top-4 h-screen overflow-y-scroll no-scrollbar">
 		<div class="flex items-end mb-4 gap-2">
 			<img src="/images/logo.svg" alt="Logo" />
@@ -151,7 +151,7 @@
 				<SearchIcon class="text-slate-400" />
 			</button>
 		</form>
-		<div class="bg-slate-900 rounded-lg p-8 mt-6">
+		<div class="bg-slate-900 rounded-lg p-8 mt-4">
 			<h2 class="text-2xl font-semibold mb-3">Related tags</h2>
 			{#await data.streamed.relatedTags}
 				<p class="text-slate-400">Loading...</p>
@@ -166,7 +166,7 @@
 				</ol>
 			{/await}
 		</div>
-		<div class="bg-slate-900 rounded-lg p-8 mt-6">
+		<div class="bg-slate-900 rounded-lg p-8 mt-4">
 			<h2 class="text-2xl font-semibold mb-3">Blacklisted tags</h2>
 			<div
 				class="rounded-lg bg-slate-800 bg-opacity-50 p-3 outline-amber-400 outline-2 focus-within:outline"

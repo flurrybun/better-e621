@@ -37,7 +37,7 @@
 </script>
 
 {#if postData}
-	<div class="pb-[16px]" style="width: {itemWidth}">
+	<div class="pb-4" style="width: {itemWidth}">
 		<div class="relative">
 			{#if postData.type !== 'flash'}
 				<img
