@@ -11,7 +11,7 @@
 
 	export let data;
 
-	let searchValue: string[] = data.searchQuery.split(' ');
+	let searchValue: string[] = data.searchQuery.split(' ').filter((tag) => tag !== '');
 	let blacklistValue = $blacklistedTags;
 
 	$: blacklistedTags.set(blacklistValue);
