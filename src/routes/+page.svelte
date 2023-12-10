@@ -40,6 +40,7 @@
 />
 
 <svelte:head>
+	<title>{data.searchQuery ? data.searchQuery + ' | better e621' : 'better e621'}</title>
 	{#if isSearchPanelOpen}
 		<style>
 			body {
