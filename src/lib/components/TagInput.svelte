@@ -75,10 +75,11 @@
 		<input
 			type="text"
 			bind:this={input}
-			{name}
-			placeholder={tags.length === 0 ? placeholder : ''}
 			bind:value={inputValue}
 			on:keydown={handleKeyDown}
+			{name}
+			placeholder={tags.length === 0 ? placeholder : ''}
+			autocomplete="off"
 			class="w-full min-w-[60px] bg-transparent placeholder:text-slate-600 focus:placeholder:text-transparent focus-visible:outline-none"
 		/>
 	</div>
