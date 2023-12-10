@@ -4,38 +4,34 @@
 
 @layer base {
 	html {
-		font-family: 'Euclid Circular B';
+		font-family: 'Euclid Circular B', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 		background-color: theme(colors.slate.950);
 		color: theme(colors.slate.100);
 	}
 	@font-face {
 		font-family: 'Euclid Circular B';
-		src: url('/fonts/EuclidCircularB-Regular-WebS.woff2') format('woff2'),
-			url('/fonts/EuclidCircularB-Regular-WebS.woff') format('woff');
+		src: url('/fonts/EuclidCircularB-Regular-WebS.woff2') format('woff2');
 		font-weight: 400;
 		font-display: swap;
 		font-style: normal;
 	}
 	@font-face {
 		font-family: 'Euclid Circular B';
-		src: url('/fonts/EuclidCircularB-Medium-WebS.woff2') format('woff2'),
-			url('/fonts/EuclidCircularB-Medium-WebS.woff') format('woff');
+		src: url('/fonts/EuclidCircularB-Medium-WebS.woff2') format('woff2');
 		font-weight: 500;
 		font-display: swap;
 		font-style: normal;
 	}
 	@font-face {
 		font-family: 'Euclid Circular B';
-		src: url('/fonts/EuclidCircularB-Semibold-WebS.woff2') format('woff2'),
-			url('/fonts/EuclidCircularB-Semibold-WebS.woff') format('woff');
+		src: url('/fonts/EuclidCircularB-Semibold-WebS.woff2') format('woff2');
 		font-weight: 600;
 		font-display: swap;
 		font-style: normal;
 	}
 	@font-face {
 		font-family: 'Euclid Circular B';
-		src: url('/fonts/EuclidCircularB-Bold-WebS.woff2') format('woff2'),
-			url('/fonts/EuclidCircularB-Bold-WebS.woff') format('woff');
+		src: url('/fonts/EuclidCircularB-Bold-WebS.woff2') format('woff2');
 		font-weight: 700;
 		font-display: swap;
 		font-style: normal;
